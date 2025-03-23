@@ -91,12 +91,12 @@ public class Vanilla {
 
     // Определение типа по выбору
     private static String getTypeFromChoice(int choice) {
-        switch (choice) {
-            case 2: return "snapshot";
-            case 3: return "beta";
-            case 4: return "alpha";
-            default: return "release";
-        }
+        return switch (choice) {
+            case 2 -> "snapshot";
+            case 3 -> "beta";
+            case 4 -> "alpha";
+            default -> "release";
+        };
     }
 
     // Получение последней версии каждого типа

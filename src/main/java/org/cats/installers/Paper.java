@@ -102,7 +102,7 @@ public class Paper {
             JSONObject json = new JSONObject(response.toString());
             JSONArray builds = json.getJSONArray("builds");
 
-            return builds.getInt(builds.length() - 1); // Последний элемент массива
+            return builds.getInt(builds.length() - 1);
 
         } catch (Exception e) {
             return -1; // Ошибка
