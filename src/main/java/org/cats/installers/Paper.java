@@ -17,6 +17,7 @@ public class Paper {
     public static void paperinstall() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Введите версию:");
+        System.out.print(">> ");
         String version = scanner.next();
         String build = String.valueOf(getLatestBuild(version));
         String fileName = "paper-" + version + "-" + build + ".jar";

@@ -31,6 +31,7 @@ public class Vanilla {
         System.out.println("3. "+  YELLOW + "Beta" + RESET);
         System.out.println("4. " + RED + "Alpha" + RESET);
         System.out.print("Введите номер: ");
+        System.out.print(">> ");
         int typeChoice = scanner.nextInt();
         String type = getTypeFromChoice(typeChoice);
 
@@ -49,7 +50,8 @@ public class Vanilla {
         }
 
         // Выбор версии
-        System.out.print("Введите номер версии (или 0 для последней): ");
+        System.out.println("Введите номер версии (или 0 для последней): ");
+        System.out.print(">> ");
         int choice = scanner.nextInt();
         scanner.close();
 
