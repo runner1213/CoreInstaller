@@ -7,6 +7,7 @@ import static org.cats.Mohist.MohistInstaller;
 import static org.cats.Paper.getLatestBuild;
 import static org.cats.Paper.paperinstall;
 import static org.cats.Vanilla.VanillaInstaller;
+import static org.cats.util.colors.*;
 
 public class Main {
     public static void main(String[] args) {
@@ -36,10 +37,9 @@ public class Main {
             MohistInstaller();
         }
         else {
-            System.out.println("Упс.. Ты ввёл что-то не то");
+            System.out.println(RED + "Упс.. Ты ввёл что-то не то" + RESET);
             System.out.println("Попробуй снова :3");
             application();
         }
-        System.exit(0);
     }
 }

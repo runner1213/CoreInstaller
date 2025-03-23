@@ -181,7 +181,7 @@ public class Vanilla {
             }
 
         } catch (Exception e) {
-            System.err.println("❌ Ошибка загрузки: " + e.getMessage());
+            System.err.println(RED + "Ошибка загрузки: " + e.getMessage() + RESET);
         }
     }
 
