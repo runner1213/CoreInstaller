@@ -1,4 +1,4 @@
-package org.cats;
+package org.cats.installers;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -6,6 +6,7 @@ import java.net.URL;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.util.Scanner;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -13,7 +14,11 @@ import org.json.JSONObject;
 import static org.cats.util.colors.*;
 
 public class Paper {
-    public static void paperinstall(String version, int build) {
+    public static void paperinstall() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Введите версию:");
+        String version = scanner.next();
+        String build = String.valueOf(getLatestBuild(version));
         String fileName = "paper-" + version + "-" + build + ".jar";
         String url = "https://api.papermc.io/v2/projects/paper/versions/" + version + "/builds/" + build + "/downloads/" + fileName;
 

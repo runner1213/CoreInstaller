@@ -1,8 +1,8 @@
-package org.cats;
+package org.cats.installers;
 
 public class Mohist {
     public static void MohistInstaller() {
-        System.out.println("Я не нашёл, какое API использует Mohist");
+        System.out.println("Скоро...");
         System.out.println("Сорян :3");
     }
 }

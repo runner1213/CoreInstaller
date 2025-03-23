@@ -1,4 +1,4 @@
-package org.cats;
+package org.cats.installers;
 
 import java.io.*;
 import java.net.URL;
