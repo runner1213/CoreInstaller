@@ -67,10 +67,10 @@ public class Vanilla {
         String serverJarURL = getServerJarURL(manifest, selectedVersion);
         if (serverJarURL != null) {
             System.out.println(GREEN + "Ссылка получена!" + RESET);
-            System.out.println("💾 Начинаем скачивание server.jar...");
+            System.out.println(GREEN + "Начало скачивания server.jar..." + RESET);
             downloadWithProgress(serverJarURL, "server-" + selectedVersion + ".jar");
         } else {
-            System.out.println("❌ Ошибка при получении ссылки.");
+            System.out.println(RED + "Ошибка при получении ссылки." + RESET);
         }
     }
 
