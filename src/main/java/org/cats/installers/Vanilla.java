@@ -74,7 +74,6 @@ public class Vanilla {
         }
     }
 
-    // Фильтр по типу ядра
     private static List<String> filterVersionsByType(JSONArray versions, String type) {
         List<String> filtered = new ArrayList<>();
         for (int i = 0; i < versions.length(); i++) {
