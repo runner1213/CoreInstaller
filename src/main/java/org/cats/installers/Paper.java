@@ -60,6 +60,12 @@ public class Paper {
             } else {
                 System.err.println(RED + "Ошибка при переименовании файла!" + RESET);
             }
+            try (FileWriter writer = new FileWriter("eula.txt")) {
+                writer.write("eula=true\n");
+            } catch (IOException e) {
+                System.err.println(e.getMessage());
+            }
+            System.out.println(YELLOW + "Файл eula.txt создан.");
 
         } catch (Exception e) {
             System.err.println(e.getMessage());

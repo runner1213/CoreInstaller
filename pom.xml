@@ -6,7 +6,7 @@
 
     <groupId>org.cats</groupId>
     <artifactId>CoreInstaller</artifactId>
-    <version>1.4</version>
+    <version>1.4.1</version>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
