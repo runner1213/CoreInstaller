@@ -14,6 +14,12 @@ public class Forge {
             System.out.println(GREEN + "Файл успешно загружен!" + RESET);
             runInstaller(FILE_NAME);
             deleteFile(FILE_NAME);
+            try (FileWriter writer = new FileWriter("eula.txt")) {
+                writer.write("eula=true\n");
+            } catch (IOException e) {
+                System.err.println(e.getMessage());
+            }
+            System.out.println(YELLOW + "Файл eula.txt создан.");
         } else {
             System.out.println(RED + "Ошибка скачивания." + RESET);
         }

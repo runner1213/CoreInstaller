@@ -184,6 +184,12 @@ public class Vanilla {
         } catch (Exception e) {
             System.err.println(RED + "Ошибка загрузки: " + e.getMessage() + RESET);
         }
+        try (FileWriter writer = new FileWriter("eula.txt")) {
+            writer.write("eula=true\n");
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+        }
+        System.out.println(YELLOW + "Файл eula.txt создан.");
     }
 
     // Прогресс-бар загрузки
