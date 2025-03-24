@@ -23,7 +23,6 @@ public class Vanilla {
         Map<String, String> latestVersions = getLatestVersions(manifest);
         JSONArray versions = manifest.getJSONArray("versions");
 
-        // Запрос выбора типа версии
         Scanner scanner = new Scanner(System.in);
         System.out.println("\nВыберите тип ядра:");
         System.out.println("1. "+ GREEN + "Release" + RESET);
@@ -35,7 +34,6 @@ public class Vanilla {
         int typeChoice = scanner.nextInt();
         String type = getTypeFromChoice(typeChoice);
 
-        // Получение списка версий по выбранному типу
         List<String> filteredVersions = filterVersionsByType(versions, type);
         if (filteredVersions.isEmpty()) {
             System.out.println(RED + "Нет доступных версий для выбранного типа." + RESET);
@@ -89,8 +87,7 @@ public class Vanilla {
         }
         return filtered;
     }
-
-    // Определение типа по выбору
+    
     private static String getTypeFromChoice(int choice) {
         return switch (choice) {
             case 2 -> "snapshot";
@@ -100,17 +97,15 @@ public class Vanilla {
         };
     }
 
-    // Получение последней версии каждого типа
     private static Map<String, String> getLatestVersions(JSONObject manifest) {
         Map<String, String> latest = new HashMap<>();
         latest.put("release", manifest.getJSONObject("latest").getString("release"));
         latest.put("snapshot", manifest.getJSONObject("latest").getString("snapshot"));
-        latest.put("beta", "b1.9-pre6"); // Пример для бета-версии
-        latest.put("alpha", "a1.2.6");  // Пример для альфа-версии
+        latest.put("beta", "b1.9-pre6");
+        latest.put("alpha", "a1.2.6"); 
         return latest;
     }
 
-    // Получение ссылки на server.jar
     public static String getServerJarURL(JSONObject manifest, String version) {
         JSONArray versions = manifest.getJSONArray("versions");
         for (int i = 0; i < versions.length(); i++) {
@@ -123,7 +118,6 @@ public class Vanilla {
         return null;
     }
 
-    // HTTP-запрос
     public static JSONObject getJSON(String url) {
         try {
             HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
@@ -167,7 +161,6 @@ public class Vanilla {
             outputStream.close();
             System.out.println("\n" + GREEN + "Скачивание завершено!" + RESET);
 
-            // Переименование в server.jar
             File downloadedFile = new File(saveFile);
             File serverJar = new File("server.jar");
 
@@ -192,7 +185,6 @@ public class Vanilla {
         System.out.println(YELLOW + "Файл eula.txt создан.");
     }
 
-    // Прогресс-бар загрузки
     public static void printProgress(int downloaded, int totalSize) {
         int percent = totalSize > 0 ? (downloaded * 100) / totalSize : -1;
         int progressWidth = 30;
@@ -207,7 +199,6 @@ public class Vanilla {
         System.out.print(progressBar);
     }
 
-    // Форматирование размера
     public static String formatSize(int bytes) {
         String[] units = {"B", "KB", "MB", "GB"};
         double size = bytes;
@@ -219,7 +210,6 @@ public class Vanilla {
         return String.format("%.2f %s", size, units[unitIndex]);
     }
 
-    // Анимация загрузки
     public static void animateLoading(int steps) {
         String[] frames = {"⠁", "⠂", "⠄", "⡀", "⢀", "⠠", "⠐", "⠈"};
         for (int i = 0; i < steps; i++) {
