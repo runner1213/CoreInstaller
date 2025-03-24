@@ -47,7 +47,6 @@ public class Paper {
             outputStream.close();
             System.out.println("\n" + GREEN + "Скачивание завершено!" + RESET);
 
-            // Переименование в server.jar
             File downloadedFile = new File(saveFile);
             File serverJar = new File("server.jar");
 
@@ -78,12 +77,6 @@ public class Paper {
             else bar.append("-");
         }
         System.out.print(bar);
-    }
-
-    public static void getLatestBuild() {
-        String version = "1.21"; // Укажи нужную версию
-        int latestBuild = getLatestBuild(version);
-        System.out.println("Последний билд для " + version + ": " + latestBuild);
     }
 
     public static int getLatestBuild(String version) {
