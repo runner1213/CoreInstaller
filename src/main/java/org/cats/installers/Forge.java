@@ -1,66 +1,95 @@
 package org.cats.installers;
 
 import java.io.*;
+import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import static org.cats.util.colors.*;
 
 public class Forge {
     private static final String FILE_URL = "https://www.curseforge.com/api/v1/mods/525582/files/5253323/download";
     private static final String FILE_NAME = "installer.jar";
+    private static final String EULA_FILE = "eula.txt";
 
     public static void installForge() {
-        System.out.println(CYAN + "Скачивание " + FILE_NAME + "..." + RESET);
+        System.out.println(CYAN + "Downloading " + FILE_NAME + "..." + RESET);
+
         if (downloadFile(FILE_URL, FILE_NAME)) {
-            System.out.println(GREEN + "Файл успешно загружен!" + RESET);
-            runInstaller(FILE_NAME);
-            deleteFile(FILE_NAME);
-            try (FileWriter writer = new FileWriter("eula.txt")) {
-                writer.write("eula=true\n");
-            } catch (IOException e) {
-                System.err.println(e.getMessage());
+            System.out.println(GREEN + "File downloaded successfully!" + RESET);
+
+            if (runInstaller(FILE_NAME)) {
+                System.out.println(GREEN + "Installation completed successfully!" + RESET);
+                createEulaFile();
+            } else {
+                System.out.println(YELLOW + "Keeping installer for manual inspection" + RESET);
             }
-            System.out.println(YELLOW + "Файл eula.txt создан.");
+            deleteFile(FILE_NAME);
         } else {
-            System.out.println(RED + "Ошибка скачивания." + RESET);
+            System.out.println(RED + "Download failed." + RESET);
         }
     }
 
     public static boolean downloadFile(String fileURL, String saveFile) {
-        try (BufferedInputStream inputStream = new BufferedInputStream(new URL(fileURL).openStream());
-             FileOutputStream fileOutputStream = new FileOutputStream(saveFile)) {
+        try {
+            URL url = new URL(fileURL);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setConnectTimeout(15000);
+            connection.setReadTimeout(15000);
 
-            byte[] buffer = new byte[4096];
-            int bytesRead;
-            while ((bytesRead = inputStream.read(buffer, 0, 4096)) != -1) {
-                fileOutputStream.write(buffer, 0, bytesRead);
+            try (InputStream inputStream = connection.getInputStream()) {
+                Files.copy(inputStream, Path.of(saveFile), StandardCopyOption.REPLACE_EXISTING);
             }
             return true;
-
         } catch (IOException e) {
-            System.err.println("Ошибка загрузки: " + e.getMessage());
+            System.err.println("Download error: " + e.getMessage());
             return false;
         }
     }
 
-    public static void runInstaller(String fileName) {
-        System.out.println(YELLOW + "Запуск " + fileName + "..." + RESET);
+    public static boolean runInstaller(String fileName) {
+        System.out.println(YELLOW + "Launching " + fileName + "..." + RESET);
+
         try {
             Process process = new ProcessBuilder("java", "-Xms128M", "-Xmx1G", "-jar", fileName)
                     .inheritIO()
                     .start();
-            process.waitFor();
-            System.out.println(GREEN + "Установка завершена!" + RESET);
-        } catch (IOException | InterruptedException e) {
-            System.err.println(RED + "Ошибка запуска: " + e.getMessage() + RESET);
+
+            int exitCode = process.waitFor();
+            if (exitCode != 0) {
+                System.err.println(RED + "Installer failed with exit code: " + exitCode + RESET);
+                return false;
+            }
+            return true;
+        } catch (IOException e) {
+            System.err.println(RED + "Execution error: " + e.getMessage() + RESET);
+            return false;
+        } catch (InterruptedException e) {
+            System.err.println(RED + "Installation interrupted" + RESET);
+            Thread.currentThread().interrupt();
+            return false;
+        }
+    }
+
+    public static void createEulaFile() {
+        try (FileWriter writer = new FileWriter(EULA_FILE)) {
+            writer.write("eula=true\n");
+            System.out.println(YELLOW + "EULA file created at: " + new File(EULA_FILE).getAbsolutePath() + RESET);
+        } catch (IOException e) {
+            System.err.println(RED + "Error creating EULA file: " + e.getMessage() + RESET);
         }
     }
 
     public static void deleteFile(String fileName) {
         File file = new File(fileName);
-        if (file.exists() && file.delete()) {
-            System.out.println(RED + "Файл " + fileName + " удалён." + RESET);
-        } else {
-            System.err.println(RED + "Ошибка удаления файла." + RESET);
+        if (file.exists()) {
+            if (file.delete()) {
+                System.out.println(RED + "File " + fileName + " deleted." + RESET);
+            } else {
+                System.err.println(RED + "Failed to delete file: " + fileName + RESET);
+            }
         }
     }
 }

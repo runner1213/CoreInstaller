@@ -40,31 +40,29 @@ public class Vanilla {
             return;
         }
 
-        // Выводим 10 последних версий
+        // Вывод 10 последних версий
         int limit = Math.min(10, filteredVersions.size());
-        System.out.println("\n" + YELLOW +"Доступные версии:" + RESET);
+        System.out.println("\n" + YELLOW + + limit + " доступных версий:" + RESET);
         for (int i = 0; i < limit; i++) {
             System.out.println((i + 1) + ". " + filteredVersions.get(i));
         }
+        scanner.nextLine();
 
-        // Выбор версии
-        System.out.println("Введите номер версии (или 0 для последней): ");
+        System.out.println(GREEN + "Введите версию " + RESET);
         System.out.print(">> ");
-        int choice = scanner.nextInt();
-        scanner.close();
+        String selectedVersion = scanner.nextLine().trim();
 
-        String selectedVersion = choice == 0 ? latestVersions.get(type) :
-                (choice > 0 && choice <= limit ? filteredVersions.get(choice - 1) : null);
-
+        /*
         if (selectedVersion == null) {
             System.out.println(RED + "Некорректный ввод." + RESET);
             return;
         }
+         */
 
         System.out.println(CYAN + "Получение ссылки для версии " + selectedVersion + "..." + RESET);
         animateLoading(5);
 
-        String serverJarURL = getServerJarURL(manifest, selectedVersion);
+        String serverJarURL = getServerJarURL(manifest, String.valueOf(selectedVersion));
         if (serverJarURL != null) {
             System.out.println(GREEN + "Ссылка получена!" + RESET);
             System.out.println(GREEN + "Начало скачивания server.jar..." + RESET);
@@ -87,7 +85,7 @@ public class Vanilla {
         }
         return filtered;
     }
-    
+
     private static String getTypeFromChoice(int choice) {
         return switch (choice) {
             case 2 -> "snapshot";
@@ -102,7 +100,7 @@ public class Vanilla {
         latest.put("release", manifest.getJSONObject("latest").getString("release"));
         latest.put("snapshot", manifest.getJSONObject("latest").getString("snapshot"));
         latest.put("beta", "b1.9-pre6");
-        latest.put("alpha", "a1.2.6"); 
+        latest.put("alpha", "a1.2.6");
         return latest;
     }
 
