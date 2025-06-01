@@ -72,7 +72,7 @@ public class Velocity {
             System.out.println((i + 1) + ". " + lastTen.get(i));
         }
 
-        System.out.print("\nВыберите версию Velocity (1-" + lastTen.size() + "): ");
+        System.out.println("\nВыберите версию Velocity (1-" + lastTen.size() + "): ");
         System.out.print(">> ");
         int choice = scanner.nextInt();
 

@@ -103,7 +103,7 @@ public class Fabric {
         }
          */
 
-        System.out.print("\nВыберите версию Minecraft (1.21.5 т.д.) ");
+        System.out.println("\nВыберите версию Minecraft (1.21.5 т.д.) ");
         System.out.print(">> ");
 
         return scanner.nextLine();
@@ -128,7 +128,7 @@ public class Fabric {
             System.out.println((i + 1) + ". " + lastFive.get(i));
         }
 
-        System.out.print("\nВыберите версию загрузчика (1-" + lastFive.size() + "): ");
+        System.out.println("\nВыберите версию загрузчика (1-" + lastFive.size() + "): ");
         System.out.print(">> ");
         int choice = scanner.nextInt();
 

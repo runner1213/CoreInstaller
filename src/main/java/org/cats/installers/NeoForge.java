@@ -150,7 +150,7 @@ public class NeoForge {
             System.out.println((i + 1) + ". " + versions.get(i));
         }
 
-        System.out.print("\nВыберите версию NeoForge (1-" + versions.size() + "): ");
+        System.out.println("\nВыберите версию NeoForge (1-" + versions.size() + "): ");
         System.out.print(">> ");
         int choice = scanner.nextInt();
 
