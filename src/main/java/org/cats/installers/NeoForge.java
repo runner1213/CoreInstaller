@@ -4,26 +4,33 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 import javax.xml.parsers.*;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.cats.util.Eula;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.w3c.dom.*;
 import org.xml.sax.InputSource;
 
-import static org.cats.util.colors.*;
+import static org.cats.util.Eula.createEulaFile;
+import static org.cats.installers.Vanilla.printProgress;
+import static org.cats.util.Colors.*;
 
 public class NeoForge {
+    private static final Logger logger = LogManager.getLogger(NeoForge.class);
+
     private static final String MAVEN_METADATA_URL = "https://maven.neoforged.net/releases/net/neoforged/neoforge/maven-metadata.xml";
     private static final String MINECRAFT_MANIFEST_URL = "https://launchermeta.mojang.com/mc/game/version_manifest_v2.json";
     private static final String INSTALLER_URL_TEMPLATE = "https://maven.neoforged.net/releases/net/neoforged/neoforge/%s/neoforge-%s-installer.jar";
     private static final String INSTALLER_FILE = "neoforge-installer.jar";
-    private static final String EULA_FILE = "eula.txt";
 
     public static void installNeoForge() {
         try {
             System.out.println(CYAN + "Получение списка версий Minecraft..." + RESET);
             JSONObject minecraftManifest = getMinecraftManifest();
             if (minecraftManifest == null) {
-                System.out.println(RED + "Ошибка при получении списка версий Minecraft." + RESET);
+                logger.error(RED + "Ошибка при получении списка версий Minecraft." + RESET);
                 return;
             }
 
@@ -32,12 +39,12 @@ public class NeoForge {
                 return;
             }
 
-            System.out.println(CYAN + "\nПолучение совместимых версий NeoForge для Minecraft " + minecraftVersion + "..." + RESET);
+            logger.info(CYAN + "\nПолучение совместимых версий NeoForge для Minecraft {}..." + RESET, minecraftVersion);
             animateLoading(5);
 
             Document metadata = getXML(MAVEN_METADATA_URL);
             if (metadata == null) {
-                System.out.println(RED + "Ошибка при получении метаданных NeoForge." + RESET);
+                logger.error(RED + "Ошибка при получении метаданных NeoForge." + RESET);
                 return;
             }
 
@@ -45,7 +52,7 @@ public class NeoForge {
             List<String> compatibleVersions = filterCompatibleVersions(allVersions, minecraftVersion);
 
             if (compatibleVersions.isEmpty()) {
-                System.out.println(RED + "Не найдено совместимых версий NeoForge для Minecraft " + minecraftVersion + RESET);
+                logger.warn(RED + "Не найдено совместимых версий NeoForge для Minecraft {}" + RESET, minecraftVersion);
                 return;
             }
 
@@ -55,19 +62,19 @@ public class NeoForge {
             }
 
             String installerUrl = String.format(INSTALLER_URL_TEMPLATE, selectedNeoForgeVersion, selectedNeoForgeVersion);
-            System.out.println(CYAN + "\nСкачивание установщика " + selectedNeoForgeVersion + "..." + RESET);
+            logger.info(CYAN + "\nСкачивание установщика {}..." + RESET, selectedNeoForgeVersion);
             downloadWithProgress(installerUrl, INSTALLER_FILE);
 
-            System.out.println(YELLOW + "\nЗапуск установщика..." + RESET);
+            logger.info(YELLOW + "\nЗапуск установщика..." + RESET);
             runInstaller(INSTALLER_FILE);
 
             createEulaFile();
             deleteFile(INSTALLER_FILE);
 
-            System.out.println(GREEN + "\nNeoForge успешно установлен для Minecraft " + minecraftVersion + RESET);
+            logger.info(GREEN + "\nNeoForge успешно установлен для Minecraft {}" + RESET, minecraftVersion);
 
         } catch (Exception e) {
-            System.err.println(RED + "Ошибка: " + e.getMessage() + RESET);
+            logger.error(RED + "Ошибка: {}" + RESET, e.getMessage());
             e.printStackTrace();
         }
     }
@@ -89,7 +96,7 @@ public class NeoForge {
                 return new JSONObject(response.toString());
             }
         } catch (Exception e) {
-            System.err.println("Ошибка получения манифеста Minecraft: " + e.getMessage());
+            logger.error("Ошибка получения манифеста Minecraft: {}", e.getMessage());
             return null;
         }
     }
@@ -98,7 +105,6 @@ public class NeoForge {
         JSONArray versions = manifest.getJSONArray("versions");
         List<String> releaseVersions = new ArrayList<>();
 
-        // Собираем только release версии
         for (int i = 0; i < versions.length(); i++) {
             JSONObject version = versions.getJSONObject(i);
             if ("release".equals(version.getString("type"))) {
@@ -224,24 +230,11 @@ public class NeoForge {
                     downloaded += bytesRead;
                     printProgress(downloaded, fileSize);
                 }
-                System.out.println("\n" + GREEN + "Скачивание завершено!" + RESET);
+                logger.info("\n" + GREEN + "Скачивание завершено!" + RESET);
             }
         } catch (Exception e) {
             throw new RuntimeException("Ошибка загрузки: " + e.getMessage());
         }
-    }
-
-    private static void printProgress(int downloaded, int totalSize) {
-        int percent = (int) ((downloaded * 100.0) / totalSize);
-        int progressWidth = 30;
-        int filled = progressWidth * percent / 100;
-
-        StringBuilder bar = new StringBuilder("\r[");
-        for (int i = 0; i < progressWidth; i++) {
-            bar.append(i < filled ? "=" : "-");
-        }
-        bar.append("] ").append(percent).append("% (").append(formatSize(downloaded)).append("/").append(formatSize(totalSize)).append(")");
-        System.out.print(bar);
     }
 
     private static String formatSize(long bytes) {
@@ -249,15 +242,6 @@ public class NeoForge {
         int exp = (int) (Math.log(bytes) / Math.log(1024));
         char unit = "KMGTPE".charAt(exp - 1);
         return String.format("%.1f %sB", bytes / Math.pow(1024, exp), unit);
-    }
-
-    private static void createEulaFile() {
-        try (FileWriter writer = new FileWriter(EULA_FILE)) {
-            writer.write("eula=true\n");
-            System.out.println(YELLOW + "Файл " + EULA_FILE + " создан" + RESET);
-        } catch (IOException e) {
-            System.err.println(RED + "Ошибка создания EULA: " + e.getMessage() + RESET);
-        }
     }
 
     private static void deleteFile(String fileName) {

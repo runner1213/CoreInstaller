@@ -7,7 +7,7 @@ import java.util.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import static org.cats.util.colors.*;
+import static org.cats.util.Colors.*;
 
 public class Vanilla {
     public static void VanillaInstaller() {

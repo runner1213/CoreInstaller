@@ -6,7 +6,8 @@ import java.util.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import static org.cats.util.colors.*;
+import static org.cats.util.Colors.*;
+import static org.cats.util.Eula.createEulaFile;
 
 public class Velocity {
     private static final String RELEASES_URL = "https://api.papermc.io/v2/projects/velocity";
@@ -191,14 +192,5 @@ public class Velocity {
         int exp = (int) (Math.log(bytes) / Math.log(1024));
         char unit = "KMGTPE".charAt(exp - 1);
         return String.format("%.1f %sB", bytes / Math.pow(1024, exp), unit);
-    }
-
-    private static void createEulaFile() {
-        try (FileWriter writer = new FileWriter("eula.txt")) {
-            writer.write("eula=true\n");
-            System.out.println(YELLOW + "Файл eula.txt создан" + RESET);
-        } catch (IOException e) {
-            System.err.println(RED + "Ошибка создания EULA: " + e.getMessage() + RESET);
-        }
     }
 }

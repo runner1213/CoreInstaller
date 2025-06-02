@@ -3,12 +3,17 @@ package org.cats.installers;
 import java.io.*;
 import java.net.*;
 import java.util.*;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import static org.cats.util.colors.*;
+import static org.cats.util.Colors.*;
 
 public class Fabric {
+    private static final Logger logger = LogManager.getLogger(Fabric.class);
+
     private static final String GAME_VERSIONS_URL = "https://meta.fabricmc.net/v2/versions/game";
     private static final String LOADER_VERSIONS_URL = "https://meta.fabricmc.net/v2/versions/loader";
     private static final String INSTALLER_URL = "https://meta.fabricmc.net/v2/versions/installer";
@@ -16,67 +21,60 @@ public class Fabric {
 
     public static void installFabric() {
         try {
-            // Шаг 1: Получить список версий Minecraft
-            System.out.println(CYAN + "Получение списка версий Minecraft..." + RESET);
+            logger.info(CYAN + "Получение списка версий Minecraft..." + RESET);
             JSONArray gameVersions = getJSONArray(GAME_VERSIONS_URL);
             if (gameVersions == null) {
                 System.out.println(RED + "Ошибка при получении списка версий Minecraft." + RESET);
                 return;
             }
 
-            // Выбор версии Minecraft
             String minecraftVersion = selectMinecraftVersion(gameVersions);
             if (minecraftVersion == null) {
                 return;
             }
 
-            // Шаг 2: Получить версии загрузчика Fabric
-            System.out.println(CYAN + "\nПолучение версий загрузчика Fabric..." + RESET);
+            logger.info(CYAN + "\nПолучение версий загрузчика Fabric..." + RESET);
             JSONArray loaderVersions = getJSONArray(LOADER_VERSIONS_URL);
             if (loaderVersions == null) {
-                System.out.println(RED + "Ошибка при получении версий загрузчика." + RESET);
+                logger.error(RED + "Ошибка при получении версий загрузчика." + RESET);
                 return;
             }
 
-            // Выбор версии загрузчика
             String loaderVersion = selectLoaderVersion(loaderVersions);
             if (loaderVersion == null) {
                 return;
             }
 
-            // Шаг 3: Получить версию установщика
-            System.out.println(CYAN + "\nПолучение версии установщика..." + RESET);
+            logger.info(CYAN + "\nПолучение версии установщика..." + RESET);
             JSONArray installerVersions = getJSONArray(INSTALLER_URL);
             if (installerVersions == null) {
-                System.out.println(RED + "Ошибка при получении версии установщика." + RESET);
+                logger.info(RED + "Ошибка при получении версии установщика." + RESET);
                 return;
             }
 
             String installerVersion = getLatestInstallerVersion(installerVersions);
             if (installerVersion == null) {
-                System.out.println(RED + "Не удалось найти версию установщика." + RESET);
+                logger.error(RED + "Не удалось найти версию установщика." + RESET);
                 return;
             }
 
-            // Формирование URL установщика
             String installerUrl = String.format(
                     "https://maven.fabricmc.net/net/fabricmc/fabric-installer/%s/fabric-installer-%s.jar",
                     installerVersion, installerVersion
             );
 
-            System.out.println(CYAN + "\nСкачивание установщика Fabric..." + RESET);
+            logger.info(CYAN + "\nСкачивание установщика Fabric..." + RESET);
             downloadWithProgress(installerUrl);
 
-            System.out.println(YELLOW + "\nЗапуск установщика Fabric..." + RESET);
+            logger.info(YELLOW + "\nЗапуск установщика Fabric..." + RESET);
             runInstaller(minecraftVersion, loaderVersion);
 
             createEulaFile();
 
-            System.out.println(GREEN + "\nFabric успешно установлен для Minecraft " + minecraftVersion + RESET);
+            logger.info(GREEN + "\nFabric успешно установлен для Minecraft " + minecraftVersion + RESET);
 
         } catch (Exception e) {
-            System.err.println(RED + "Ошибка: " + e.getMessage() + RESET);
-            e.printStackTrace();
+            logger.error("Ошибка: {}", e.getMessage());
         } finally {
             deleteFile();
         }
@@ -133,7 +131,7 @@ public class Fabric {
         int choice = scanner.nextInt();
 
         if (choice < 1 || choice > lastFive.size()) {
-            System.out.println(RED + "Некорректный выбор." + RESET);
+            logger.warn(RED + "Некорректный выбор." + RESET);
             return null;
         }
 
@@ -218,7 +216,7 @@ public class Fabric {
                     downloaded += bytesRead;
                     printProgress(downloaded, fileSize);
                 }
-                System.out.println("\n" + GREEN + "Скачивание завершено!" + RESET);
+                logger.info("\n" + GREEN + "Скачивание завершено!" + RESET);
             }
         } catch (Exception e) {
             throw new RuntimeException("Ошибка загрузки: " + e.getMessage());
@@ -257,7 +255,7 @@ public class Fabric {
             writer.write("eula=true\n");
             System.out.println(YELLOW + "Файл eula.txt создан" + RESET);
         } catch (IOException e) {
-            System.err.println(RED + "Ошибка создания EULA: " + e.getMessage() + RESET);
+            logger.warn(RED + "Ошибка создания EULA: {}", e.getMessage() + RESET);
         }
     }
 
@@ -265,9 +263,9 @@ public class Fabric {
         File file = new File(Fabric.INSTALLER_FILE);
         if (file.exists()) {
             if (file.delete()) {
-                System.out.println(RED + "Временный файл " + Fabric.INSTALLER_FILE + " удалён" + RESET);
+                logger.info(RED + "Временный файл " + Fabric.INSTALLER_FILE + " удалён" + RESET);
             } else {
-                System.err.println(RED + "Ошибка удаления: " + Fabric.INSTALLER_FILE + RESET);
+                logger.warn(RED + "Ошибка удаления: " + Fabric.INSTALLER_FILE + RESET);
             }
         }
     }

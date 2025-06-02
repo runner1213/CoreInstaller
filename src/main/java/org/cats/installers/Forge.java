@@ -1,33 +1,38 @@
 package org.cats.installers;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import static org.cats.util.colors.*;
+import static org.cats.util.Colors.*;
+import static org.cats.util.Eula.createEulaFile;
 
 public class Forge {
+    private static final Logger logger = LogManager.getLogger(Forge.class);
+
     private static final String FILE_URL = "https://www.curseforge.com/api/v1/mods/525582/files/5253323/download";
     private static final String FILE_NAME = "installer.jar";
-    private static final String EULA_FILE = "eula.txt";
 
     public static void installForge() {
-        System.out.println(CYAN + "Downloading " + FILE_NAME + "..." + RESET);
+        logger.info(CYAN + "Downloading " + FILE_NAME + "..." + RESET);
 
         if (downloadFile(FILE_URL, FILE_NAME)) {
-            System.out.println(GREEN + "File downloaded successfully!" + RESET);
+            logger.info(GREEN + "File downloaded successfully!" + RESET);
 
             if (runInstaller(FILE_NAME)) {
-                System.out.println(GREEN + "Installation completed successfully!" + RESET);
+                logger.info(GREEN + "Installation completed successfully!" + RESET);
                 createEulaFile();
             } else {
                 System.out.println(YELLOW + "Keeping installer for manual inspection" + RESET);
             }
             deleteFile(FILE_NAME);
         } else {
-            System.out.println(RED + "Download failed." + RESET);
+            logger.warn(RED + "Download failed." + RESET);
         }
     }
 
@@ -44,7 +49,7 @@ public class Forge {
             }
             return true;
         } catch (IOException e) {
-            System.err.println("Download error: " + e.getMessage());
+            logger.error("Download error: {}", e.getMessage());
             return false;
         }
     }
@@ -59,26 +64,17 @@ public class Forge {
 
             int exitCode = process.waitFor();
             if (exitCode != 0) {
-                System.err.println(RED + "Installer failed with exit code: " + exitCode + RESET);
+                logger.warn(RED + "Installer failed with exit code: {}" + RESET, exitCode);
                 return false;
             }
             return true;
         } catch (IOException e) {
-            System.err.println(RED + "Execution error: " + e.getMessage() + RESET);
+            logger.error(RED + "Execution error: {}" + RESET, e.getMessage());
             return false;
         } catch (InterruptedException e) {
-            System.err.println(RED + "Installation interrupted" + RESET);
+            logger.error(RED + "Installation interrupted" + RESET);
             Thread.currentThread().interrupt();
             return false;
-        }
-    }
-
-    public static void createEulaFile() {
-        try (FileWriter writer = new FileWriter(EULA_FILE)) {
-            writer.write("eula=true\n");
-            System.out.println(YELLOW + "EULA file created at: " + new File(EULA_FILE).getAbsolutePath() + RESET);
-        } catch (IOException e) {
-            System.err.println(RED + "Error creating EULA file: " + e.getMessage() + RESET);
         }
     }
 
@@ -86,9 +82,9 @@ public class Forge {
         File file = new File(fileName);
         if (file.exists()) {
             if (file.delete()) {
-                System.out.println(RED + "File " + fileName + " deleted." + RESET);
+                logger.info(RED + "File {} deleted." + RESET, fileName);
             } else {
-                System.err.println(RED + "Failed to delete file: " + fileName + RESET);
+                logger.error(RED + "Failed to delete file: {}" + RESET, fileName);
             }
         }
     }

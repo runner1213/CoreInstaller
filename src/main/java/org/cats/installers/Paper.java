@@ -8,12 +8,17 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.Scanner;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import static org.cats.util.colors.*;
+import static org.cats.util.Colors.*;
+import static org.cats.util.Eula.createEulaFile;
 
 public class Paper {
+    private static final Logger logger = LogManager.getLogger(Paper.class);
+
     public static void paperinstall() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Введите версию:");
@@ -36,7 +41,7 @@ public class Paper {
             byte[] buffer = new byte[4096];
             int bytesRead, downloaded = 0;
 
-            System.out.println("Скачивание " + saveFile);
+            logger.info("Скачивание {}", saveFile);
             while ((bytesRead = inputStream.read(buffer)) != -1) {
                 outputStream.write(buffer, 0, bytesRead);
                 downloaded += bytesRead;
@@ -45,7 +50,7 @@ public class Paper {
 
             inputStream.close();
             outputStream.close();
-            System.out.println("\n" + GREEN + "Скачивание завершено!" + RESET);
+            logger.info("\n" + GREEN + "Скачивание завершено!" + RESET);
 
             File downloadedFile = new File(saveFile);
             File serverJar = new File("server.jar");
@@ -55,17 +60,12 @@ public class Paper {
             }
 
             if (downloadedFile.renameTo(serverJar)) {
-                System.out.println(GREEN + "Файл успешно переименован в server.jar!" + RESET);
+                logger.info(GREEN + "Файл успешно переименован в server.jar!" + RESET);
                 System.out.println(GREEN + "Команду запуска менять не нужно. Оставьте команду запуска для Java Edition" + RESET);
             } else {
-                System.err.println(RED + "Ошибка при переименовании файла!" + RESET);
+                logger.warn(RED + "Ошибка при переименовании файла!" + RESET);
             }
-            try (FileWriter writer = new FileWriter("eula.txt")) {
-                writer.write("eula=true\n");
-            } catch (IOException e) {
-                System.err.println(e.getMessage());
-            }
-            System.out.println(YELLOW + "Файл eula.txt создан.");
+            createEulaFile();
 
         } catch (Exception e) {
             System.err.println(e.getMessage());
