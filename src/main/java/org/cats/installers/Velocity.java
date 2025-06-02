@@ -22,7 +22,7 @@ public class Velocity {
 
     public static void installVelocity() {
         try {
-            System.out.println(CYAN + "Получение информации о версиях..." + RESET);
+            logger.info(CYAN + "Получение информации о версиях..." + RESET);
             JSONObject projectData = getJSON(RELEASES_URL);
             if (projectData == null) {
                 System.out.println(RED + "Ошибка при получении данных о версиях." + RESET);
@@ -32,24 +32,24 @@ public class Velocity {
             String selectedVersion = selectVersion(projectData);
             if (selectedVersion == null) return;
 
-            System.out.println(CYAN + "Получение информации о сборках..." + RESET);
+            logger.info(CYAN + "Получение информации о сборках..." + RESET);
             String buildsUrl = RELEASES_URL + "/versions/" + selectedVersion + "/builds";
             JSONObject buildsData = getJSON(buildsUrl);
             if (buildsData == null) {
-                System.out.println(RED + "Ошибка при получении данных о сборках." + RESET);
+                logger.error(RED + "Ошибка при получении данных о сборках." + RESET);
                 return;
             }
 
             int latestBuild = getLatestBuild(buildsData);
             String fileName = getFileName(selectedVersion, latestBuild);
             if (fileName == null) {
-                System.out.println(RED + "Не удалось определить имя файла для скачивания." + RESET);
+                logger.error(RED + "Не удалось определить имя файла для скачивания." + RESET);
                 return;
             }
 
             String downloadUrl = String.format(DOWNLOAD_URL_TEMPLATE, selectedVersion, latestBuild, fileName);
 
-            logger.info(CYAN + "Скачивание Velocity " + selectedVersion + " (build #" + latestBuild + ")..." + RESET);
+            logger.info(CYAN + "Скачивание Velocity {} (build #{})..." + RESET, selectedVersion, latestBuild);
             downloadWithProgress(downloadUrl, JAR_FILE);
 
             createEulaFile();
@@ -57,7 +57,7 @@ public class Velocity {
             logger.info(GREEN + "\nVelocity успешно установлен!" + RESET);
 
         } catch (Exception e) {
-            System.err.println(RED + "Ошибка: " + e.getMessage() + RESET);
+            logger.error(RED + "Ошибка: {}" + RESET, e.getMessage());
             e.printStackTrace();
         }
     }
@@ -84,7 +84,7 @@ public class Velocity {
         int choice = scanner.nextInt();
 
         if (choice < 1 || choice > lastTen.size()) {
-            System.out.println(RED + "Некорректный выбор." + RESET);
+            logger.warn(RED + "Некорректный выбор." + RESET);
             return null;
         }
 
