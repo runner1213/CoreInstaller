@@ -4,19 +4,24 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.*;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import static org.cats.util.Colors.*;
+import static org.cats.util.Eula.createEulaFile;
 
 public class Vanilla {
+    private static final Logger logger = LogManager.getLogger(Vanilla.class);
     public static void VanillaInstaller() {
-        System.out.println("Получение списка версий...");
+        logger.info("Получение списка версий...");
         animateLoading(10);
 
         JSONObject manifest = getJSON("https://launchermeta.mojang.com/mc/game/version_manifest_v2.json");
         if (manifest == null) {
-            System.out.println(RED + "Ошибка при получении списка версий." + RESET);
+            logger.error(RED + "Ошибка при получении списка версий." + RESET);
             return;
         }
 
@@ -36,7 +41,7 @@ public class Vanilla {
 
         List<String> filteredVersions = filterVersionsByType(versions, type);
         if (filteredVersions.isEmpty()) {
-            System.out.println(RED + "Нет доступных версий для выбранного типа." + RESET);
+            logger.warn(RED + "Нет доступных версий для выбранного типа." + RESET);
             return;
         }
 
@@ -59,16 +64,16 @@ public class Vanilla {
         }
          */
 
-        System.out.println(CYAN + "Получение ссылки для версии " + selectedVersion + "..." + RESET);
+        logger.info(CYAN + "Получение ссылки для версии {}..." + RESET, selectedVersion);
         animateLoading(5);
 
         String serverJarURL = getServerJarURL(manifest, String.valueOf(selectedVersion));
         if (serverJarURL != null) {
-            System.out.println(GREEN + "Ссылка получена!" + RESET);
-            System.out.println(GREEN + "Начало скачивания server.jar..." + RESET);
+            logger.info(GREEN + "Ссылка получена!" + RESET);
+            logger.info(GREEN + "Начало скачивания server.jar..." + RESET);
             downloadWithProgress(serverJarURL, "server-" + selectedVersion + ".jar");
         } else {
-            System.out.println(RED + "Ошибка при получении ссылки." + RESET);
+            logger.error(RED + "Ошибка при получении ссылки." + RESET);
         }
     }
 
@@ -131,7 +136,7 @@ public class Vanilla {
 
             return new JSONObject(response.toString());
         } catch (Exception e) {
-            System.err.println("Ошибка HTTP запроса: " + e.getMessage());
+            logger.error("Ошибка HTTP запроса: " + e.getMessage());
             return null;
         }
     }
@@ -148,7 +153,7 @@ public class Vanilla {
             byte[] buffer = new byte[4096];
             int bytesRead, downloaded = 0;
 
-            System.out.println("📥 Скачивание " + saveFile);
+            logger.info("\uD83D\uDCE5 Скачивание {}", saveFile);
             while ((bytesRead = inputStream.read(buffer)) != -1) {
                 outputStream.write(buffer, 0, bytesRead);
                 downloaded += bytesRead;
@@ -157,7 +162,7 @@ public class Vanilla {
 
             inputStream.close();
             outputStream.close();
-            System.out.println("\n" + GREEN + "Скачивание завершено!" + RESET);
+            logger.info("\n" + GREEN + "Скачивание завершено!" + RESET);
 
             File downloadedFile = new File(saveFile);
             File serverJar = new File("server.jar");
@@ -175,12 +180,7 @@ public class Vanilla {
         } catch (Exception e) {
             System.err.println(RED + "Ошибка загрузки: " + e.getMessage() + RESET);
         }
-        try (FileWriter writer = new FileWriter("eula.txt")) {
-            writer.write("eula=true\n");
-        } catch (IOException e) {
-            System.err.println(e.getMessage());
-        }
-        System.out.println(YELLOW + "Файл eula.txt создан.");
+        createEulaFile();
     }
 
     public static void printProgress(int downloaded, int totalSize) {

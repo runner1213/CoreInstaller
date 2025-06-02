@@ -27,7 +27,7 @@ public class NeoForge {
 
     public static void installNeoForge() {
         try {
-            System.out.println(CYAN + "Получение списка версий Minecraft..." + RESET);
+            logger.info(CYAN + "Получение списка версий Minecraft..." + RESET);
             JSONObject minecraftManifest = getMinecraftManifest();
             if (minecraftManifest == null) {
                 logger.error(RED + "Ошибка при получении списка версий Minecraft." + RESET);

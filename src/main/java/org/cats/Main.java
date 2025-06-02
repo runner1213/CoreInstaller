@@ -8,7 +8,6 @@ import java.util.Scanner;
 
 import static org.cats.installers.Fabric.installFabric;
 import static org.cats.installers.Forge.installForge;
-import static org.cats.installers.Mohist.installMohist;
 import static org.cats.installers.NeoForge.installNeoForge;
 import static org.cats.installers.Paper.paperinstall;
 import static org.cats.installers.Vanilla.VanillaInstaller;
@@ -25,7 +24,7 @@ public class Main {
     protected static void application() {
         logger.info(GREEN + "Успешная инициализация" + RESET);
         System.out.println("Выберите ядро для установки:");
-        System.out.println("1. Vanilla 2. Paper 3. Velocity 4. Forge 5. Fabric 6. NeoForge 7. Mohist (Forge)");
+        System.out.println("1. Vanilla 2. Paper 3. Velocity 4. Forge 5. Fabric 6. NeoForge");
         try {
             switch (scanner.nextInt()) {
                 case 1 -> VanillaInstaller();
@@ -34,7 +33,6 @@ public class Main {
                 case 4 -> installForge();
                 case 5 -> installFabric();
                 case 6 -> installNeoForge();
-                case 7 -> installMohist();
                 default -> {
                     System.out.println(RED + "Упс.. Ты ввёл что-то не то" + RESET);
                     System.out.println("Попробуй снова :3");

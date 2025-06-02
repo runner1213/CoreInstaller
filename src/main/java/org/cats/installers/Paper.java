@@ -68,7 +68,7 @@ public class Paper {
             createEulaFile();
 
         } catch (Exception e) {
-            System.err.println(e.getMessage());
+            logger.error(e.getMessage());
         }
     }
 

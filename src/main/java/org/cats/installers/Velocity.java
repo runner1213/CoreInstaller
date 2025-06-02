@@ -3,13 +3,19 @@ package org.cats.installers;
 import java.io.*;
 import java.net.*;
 import java.util.*;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import static org.cats.installers.Vanilla.downloadWithProgress;
 import static org.cats.util.Colors.*;
 import static org.cats.util.Eula.createEulaFile;
 
 public class Velocity {
+    private static final Logger logger = LogManager.getLogger(Velocity.class);
+
     private static final String RELEASES_URL = "https://api.papermc.io/v2/projects/velocity";
     private static final String DOWNLOAD_URL_TEMPLATE = "https://api.papermc.io/v2/projects/velocity/versions/%s/builds/%s/downloads/%s";
     private static final String JAR_FILE = "server.jar";
@@ -43,12 +49,12 @@ public class Velocity {
 
             String downloadUrl = String.format(DOWNLOAD_URL_TEMPLATE, selectedVersion, latestBuild, fileName);
 
-            System.out.println(CYAN + "Скачивание Velocity " + selectedVersion + " (build #" + latestBuild + ")..." + RESET);
-            downloadWithProgress(downloadUrl);
+            logger.info(CYAN + "Скачивание Velocity " + selectedVersion + " (build #" + latestBuild + ")..." + RESET);
+            downloadWithProgress(downloadUrl, JAR_FILE);
 
             createEulaFile();
 
-            System.out.println(GREEN + "\nVelocity успешно установлен!" + RESET);
+            logger.info(GREEN + "\nVelocity успешно установлен!" + RESET);
 
         } catch (Exception e) {
             System.err.println(RED + "Ошибка: " + e.getMessage() + RESET);
@@ -137,60 +143,5 @@ public class Velocity {
             System.err.println("Ошибка JSON запроса: " + e.getMessage());
             return null;
         }
-    }
-
-    private static void downloadWithProgress(String fileURL) {
-        try {
-            HttpURLConnection connection = (HttpURLConnection) new URL(fileURL).openConnection();
-            connection.setRequestMethod("GET");
-            connection.setConnectTimeout(15000);
-            connection.setReadTimeout(30000);
-            connection.setRequestProperty("User-Agent", "Mozilla/5.0");
-
-            int fileSize = connection.getContentLength();
-            try (InputStream inputStream = connection.getInputStream();
-                 FileOutputStream outputStream = new FileOutputStream(Velocity.JAR_FILE)) {
-
-                byte[] buffer = new byte[4096];
-                int bytesRead, downloaded = 0;
-
-                System.out.println("📥 Скачивание " + Velocity.JAR_FILE);
-                while ((bytesRead = inputStream.read(buffer)) != -1) {
-                    outputStream.write(buffer, 0, bytesRead);
-                    downloaded += bytesRead;
-                    printProgress(downloaded, fileSize);
-                }
-                System.out.println("\n" + GREEN + "Скачивание завершено!" + RESET);
-            }
-        } catch (Exception e) {
-            throw new RuntimeException("Ошибка загрузки: " + e.getMessage());
-        }
-    }
-
-    private static void printProgress(int downloaded, int totalSize) {
-        int percent = totalSize > 0 ? (downloaded * 100) / totalSize : -1;
-        int progressWidth = 30;
-        int filled = progressWidth * percent / 100;
-
-        StringBuilder bar = new StringBuilder("\r[");
-        for (int i = 0; i < progressWidth; i++) {
-            bar.append(i < filled ? "=" : "-");
-        }
-
-        String progressInfo;
-        if (percent >= 0) {
-            progressInfo = percent + "% (" + formatSize(downloaded) + "/" + formatSize(totalSize) + ")";
-        } else {
-            progressInfo = formatSize(downloaded);
-        }
-
-        System.out.print(bar + "] " + progressInfo);
-    }
-
-    private static String formatSize(long bytes) {
-        if (bytes < 1024) return bytes + " B";
-        int exp = (int) (Math.log(bytes) / Math.log(1024));
-        char unit = "KMGTPE".charAt(exp - 1);
-        return String.format("%.1f %sB", bytes / Math.pow(1024, exp), unit);
     }
 }
