@@ -14,7 +14,7 @@ public class Eula {
             System.out.println();
             System.out.println("Вы должны принять лицензионное соглашение Mojang (EULA), чтобы продолжить установку");
             System.out.println("Полный текст: https://aka.ms/MinecraftEULA");
-            System.out.print("Принимаете ли Вы условия EULA? [Д/д/Y/y = Да, Н/н/N/n = Нет]: ");
+            System.out.println("Принимаете ли Вы условия EULA? [Д/д/Y/y = Да, Н/н/N/n = Нет]: ");
 
             String input = scanner.nextLine().trim().toLowerCase();
 
