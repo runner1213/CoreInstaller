@@ -1,5 +1,9 @@
 package org.cats.util;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.cats.installers.Vanilla;
+
 import java.io.FileWriter;
 import java.io.IOException;
 
@@ -8,8 +12,10 @@ import static org.cats.util.Colors.*;
 import static org.cats.util.Colors.RESET;
 
 public class Eula {
+    private static final Logger logger = LogManager.getLogger(Eula.class);
     public static final String EULA_FILE = "eula.txt";
     public static boolean acceptEula() {
+        scanner.nextLine();
         while (true) {
             System.out.println();
             System.out.println("Вы должны принять лицензионное соглашение Mojang (EULA), чтобы продолжить установку");
@@ -33,9 +39,9 @@ public class Eula {
         if (eula) {
             try (FileWriter writer = new FileWriter(EULA_FILE)) {
                 writer.write("eula=true\n");
-                System.out.println(YELLOW + "Файл " + EULA_FILE + " создан" + RESET);
+                logger.info(YELLOW + "Файл " + EULA_FILE + " создан" + RESET);
             } catch (IOException e) {
-                System.err.println(RED + "Ошибка создания EULA: " + e.getMessage() + RESET);
+                logger.error(RED + "Ошибка создания EULA: {}" + RESET, e.getMessage());
             }
         }
     }
