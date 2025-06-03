@@ -53,7 +53,7 @@ public class Vanilla {
         }
         scanner.nextLine();
 
-        System.out.println(GREEN + "Введите версию " + RESET);
+        System.out.println(GREEN + "Введите полную версию (1.21.5, 1.17, rd-132211)" + RESET);
         System.out.print(">> ");
         String selectedVersion = scanner.nextLine().trim();
 
@@ -65,7 +65,7 @@ public class Vanilla {
          */
 
         logger.info(CYAN + "Получение ссылки для версии {}..." + RESET, selectedVersion);
-        animateLoading(5);
+        animateLoading(3);
 
         String serverJarURL = getServerJarURL(manifest, String.valueOf(selectedVersion));
         if (serverJarURL != null) {

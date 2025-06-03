@@ -1,23 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="WARN">
     <Properties>
-        <!-- Общий шаблон логов -->
-        <Property name="log.pattern">[%d{HH:mm:ss}] [%t] %-5level %logger{36} - %msg%n</Property>
+        <Property name="log.pattern">[%d{HH:mm:ss}] [%t] %-5level: %msg%n</Property> <!-- %logger{36} - информация о пакете -->
+        <Property name="log.path">logs/latest.log</Property>
     </Properties>
 
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT">
             <PatternLayout pattern="${log.pattern}"/>
         </Console>
+
+        <File name="LogFile" fileName="${log.path}" append="false">
+            <PatternLayout pattern="${log.pattern}"/>
+        </File>
     </Appenders>
 
     <Loggers>
         <Root level="info">
             <AppenderRef ref="Console"/>
+            <AppenderRef ref="LogFile"/>
         </Root>
 
         <Logger name="org.cats" level="debug" additivity="false">
             <AppenderRef ref="Console"/>
+            <AppenderRef ref="LogFile"/>
         </Logger>
     </Loggers>
 </Configuration>
