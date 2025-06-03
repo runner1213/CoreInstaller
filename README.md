@@ -6,7 +6,7 @@ CoreInstaller is a CLI tool that simplifies Minecraft server setup by letting yo
 
 ## Features
 
-- ⚡ **Version Selection**: Choose specific Minecraft versions (1.8.8 - 1.20.4+)
+- ⚡ **Version Selection**: Choose specific Minecraft versions
 - 🔢 **Build Picking**: Install specific builds or latest versions
 - 📦 **Multi-Core Support**: Paper, Velocity, Vanilla, Fabric, Forge, NeoForge and more
 - 🌐 **Direct Downloads**: No browser needed - fetches directly from sources
