@@ -53,7 +53,7 @@ public class Vanilla {
         }
         scanner.nextLine();
 
-        System.out.println(GREEN + "Введите полную версию (1.21.5, 1.17, rd-132211)" + RESET);
+        System.out.println(GREEN + "Введите полную версию (1.21.5, 1.17, 1.12.2)" + RESET);
         System.out.print(">> ");
         String selectedVersion = scanner.nextLine().trim();
 

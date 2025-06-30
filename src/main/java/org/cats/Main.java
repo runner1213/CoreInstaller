@@ -22,9 +22,30 @@ public class Main {
         application();
     }
     protected static void application() {
-        logger.info(GREEN + "Успешная инициализация" + RESET);
+        logger.info("{}Успешная инициализация{}", GREEN, RESET);
+
+        // Проверка зрения
+        logger.info("{}Текст для проверки не имеющий смысла{}", CYAN, RESET);
+        logger.info("""
+                
+                 Видите ли вы текст выше? Если для вас он выглядит цветным, проигнорируйте это сообщение, нажав Enter.\s
+                 \
+                Иначе, напишите 1, чтобы отключить цветной текст в приложении""");
+
+        System.out.print(">> ");
+
+        try {
+            String colors = scanner.nextLine();
+            if (colors.trim().equals("1")) {
+                colorful(false);
+            }
+            else if (colors.isEmpty()) { throw new InputMismatchException(); }
+        } catch (InputMismatchException ignored) {}
+
+        // Выбор ядра и всё такое
         System.out.println("Выберите ядро для установки:");
         System.out.println("1. Vanilla 2. Paper 3. Velocity 4. Forge 5. Fabric 6. NeoForge");
+        System.out.print(">> ");
         try {
             switch (scanner.nextInt()) {
                 case 1 -> VanillaInstaller();
@@ -35,13 +56,13 @@ public class Main {
                 case 6 -> installNeoForge();
                 default -> {
                     System.out.println(RED + "Упс.. Ты ввёл что-то не то" + RESET);
-                    System.out.println("Попробуй снова :3");
+                    System.out.println(YELLOW + "Попробуй снова :3" + RESET);
                     application();
                 }
             }
         } catch (InputMismatchException e) {
             logger.warn("Введено нецелое число: {}", e.getMessage());
-            System.out.println(RED + "Нужно ввести число от 1 до 7!" + RESET);
+            System.out.println(RED + "Нужно ввести число от 1 до 6!" + RESET);
             scanner.nextLine();
             application();
         }

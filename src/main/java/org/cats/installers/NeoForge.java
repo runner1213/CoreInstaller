@@ -121,7 +121,7 @@ public class NeoForge {
             System.out.println((i + 1) + ". " + lastTen.get(i));
         }
 
-        System.out.print("\nВыберите версию Minecraft (1-" + lastTen.size() + "): ");
+        System.out.println("\nВыберите версию Minecraft (1-" + lastTen.size() + "): ");
         System.out.print(">> ");
         int choice = scanner.nextInt();
 
