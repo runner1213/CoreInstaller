@@ -26,9 +26,10 @@ public class Main {
 
         // Проверка зрения
         logger.info("{}Текст для проверки не имеющий смысла{}", CYAN, RESET);
+        logger.info("-------------------------");
         logger.info("""
                 
-                 Видите ли вы текст выше? Если для вас он выглядит цветным, проигнорируйте это сообщение, нажав Enter.\s
+                 Видите ли вы текст выше? Если для вас он выглядит цветным, проигнорируйте это сообщение, написав что угодно.\s
                  \
                 Иначе, напишите 1, чтобы отключить цветной текст в приложении""");
 
@@ -38,6 +39,7 @@ public class Main {
             String colors = scanner.nextLine();
             if (colors.trim().equals("1")) {
                 colorful(false);
+                logger.info("Цветной текст успешно отключен!");
             }
             else if (colors.isEmpty()) { throw new InputMismatchException(); }
         } catch (InputMismatchException ignored) {}
