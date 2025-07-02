@@ -11,7 +11,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import static org.cats.util.Colors.*;
-import static org.cats.util.Eula.createEulaFile;
+import static org.cats.util.Eula.*;
 
 public class Vanilla {
     private static final Logger logger = LogManager.getLogger(Vanilla.class);
