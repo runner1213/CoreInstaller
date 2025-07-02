@@ -2,7 +2,6 @@ package org.cats.util;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cats.installers.Vanilla;
 
 import java.io.FileWriter;
 import java.io.IOException;

@@ -172,13 +172,13 @@ public class Vanilla {
             }
 
             if (downloadedFile.renameTo(serverJar)) {
-                System.out.println(GREEN + "Файл успешно переименован в server.jar!" + RESET);
+                logger.info("{}Файл успешно переименован в server.jar!{}", GREEN, RESET);
             } else {
-                System.err.println(RED + "Ошибка при переименовании файла!" + RESET);
+                logger.error("{}Ошибка при переименовании файла!{}", RED, RESET);
             }
 
         } catch (Exception e) {
-            System.err.println(RED + "Ошибка загрузки: " + e.getMessage() + RESET);
+            logger.error("{}Ошибка загрузки: {}{}", RED, e.getMessage(), RESET);
         }
         createEulaFile();
     }
