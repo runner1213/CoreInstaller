@@ -162,20 +162,22 @@ public class Vanilla {
 
             inputStream.close();
             outputStream.close();
-            logger.info("\n" + GREEN + "Скачивание завершено!" + RESET);
+            logger.info("\n{}Скачивание завершено!{}", GREEN, RESET);
 
-            File downloadedFile = new File(saveFile);
             File serverJar = new File("server.jar");
 
             if (serverJar.exists()) {
                 serverJar.delete();
             }
 
-            if (downloadedFile.renameTo(serverJar)) {
-                logger.info("{}Файл успешно переименован в server.jar!{}", GREEN, RESET);
-            } else {
-                logger.error("{}Ошибка при переименовании файла!{}", RED, RESET);
+            if (serverJar.exists()) {
+                if (!serverJar.delete()) {
+                    logger.error("{}Не удалось удалить старый server.jar!{}", RED, RESET);
+                    return;
+                }
             }
+
+            logger.info("{}Файл успешно сохранён как server.jar!{}", GREEN, RESET);
 
         } catch (Exception e) {
             logger.error("{}Ошибка загрузки: {}{}", RED, e.getMessage(), RESET);

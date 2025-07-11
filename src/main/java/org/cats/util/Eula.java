@@ -14,8 +14,8 @@ public class Eula {
     private static final Logger logger = LogManager.getLogger(Eula.class);
     public static final String EULA_FILE = "eula.txt";
     public static boolean acceptEula() {
+        scanner.nextLine();
         while (true) {
-            scanner.nextLine();
             System.out.println();
             System.out.println("Вы должны принять лицензионное соглашение Mojang (EULA), чтобы продолжить установку");
             System.out.println("Полный текст: https://aka.ms/MinecraftEULA");
@@ -38,9 +38,9 @@ public class Eula {
         if (eula) {
             try (FileWriter writer = new FileWriter(EULA_FILE)) {
                 writer.write("eula=true\n");
-                logger.info(YELLOW + "Файл " + EULA_FILE + " создан" + RESET);
+                logger.info("{}Файл " + EULA_FILE + " создан{}", YELLOW, RESET);
             } catch (IOException e) {
-                logger.error(RED + "Ошибка создания EULA: {}" + RESET, e.getMessage());
+                logger.error("{}Ошибка создания EULA: {}{}", RED, e.getMessage(), RESET);
             }
         }
     }
