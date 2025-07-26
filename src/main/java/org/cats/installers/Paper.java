@@ -50,7 +50,7 @@ public class Paper {
 
             inputStream.close();
             outputStream.close();
-            logger.info("\n" + GREEN + "Скачивание завершено!" + RESET);
+            logger.info("\n{}Скачивание завершено!{}", GREEN, RESET);
 
             File downloadedFile = new File(saveFile);
             File serverJar = new File("server.jar");
@@ -63,7 +63,7 @@ public class Paper {
                 logger.info(GREEN + "Файл успешно переименован в server.jar!" + RESET);
                 System.out.println(GREEN + "Команду запуска менять не нужно. Оставьте команду запуска для Java Edition" + RESET);
             } else {
-                logger.warn(RED + "Ошибка при переименовании файла!" + RESET);
+                logger.warn("{}Ошибка при переименовании файла!{}", RED, RESET);
             }
             createEulaFile();
 

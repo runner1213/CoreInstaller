@@ -21,7 +21,7 @@ public class Vanilla {
 
         JSONObject manifest = getJSON("https://launchermeta.mojang.com/mc/game/version_manifest_v2.json");
         if (manifest == null) {
-            logger.error(RED + "Ошибка при получении списка версий." + RESET);
+            logger.error("{}Ошибка при получении списка версий.{}", RED, RESET);
             return;
         }
 
@@ -47,7 +47,7 @@ public class Vanilla {
 
         // Вывод 10 последних версий
         int limit = Math.min(10, filteredVersions.size());
-        System.out.println("\n" + YELLOW + + limit + " доступных версий:" + RESET);
+        System.out.println("\n" + YELLOW + limit + " доступных версий:" + RESET);
         for (int i = 0; i < limit; i++) {
             System.out.println((i + 1) + ". " + filteredVersions.get(i));
         }
@@ -64,16 +64,16 @@ public class Vanilla {
         }
          */
 
-        logger.info(CYAN + "Получение ссылки для версии {}..." + RESET, selectedVersion);
+        logger.info("{}Получение ссылки для версии {}...{}", CYAN, selectedVersion, RESET);
         animateLoading(3);
 
-        String serverJarURL = getServerJarURL(manifest, String.valueOf(selectedVersion));
+        String serverJarURL = getServerJarURL(manifest, selectedVersion);
         if (serverJarURL != null) {
-            logger.info(GREEN + "Ссылка получена!" + RESET);
-            logger.info(GREEN + "Начало скачивания server.jar..." + RESET);
-            downloadWithProgress(serverJarURL, "server-" + selectedVersion + ".jar");
+            logger.info("{}Ссылка получена!{}", GREEN, RESET);
+            logger.info("{}Начало скачивания server.jar...{}", GREEN, RESET);
+            downloadWithProgress(serverJarURL, "server.jar"); //"server-" + selectedVersion + ".jar"
         } else {
-            logger.error(RED + "Ошибка при получении ссылки." + RESET);
+            logger.error("{}Ошибка при получении ссылки.{}", RED, RESET);
         }
     }
 

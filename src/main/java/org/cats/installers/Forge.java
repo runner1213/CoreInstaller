@@ -64,7 +64,7 @@ public class Forge {
 
             int exitCode = process.waitFor();
             if (exitCode != 0) {
-                logger.warn(RED + "Installer failed with exit code: {}" + RESET, exitCode);
+                logger.warn("{}Installer failed with exit code: {}{}", RED, exitCode, RESET);
                 return false;
             }
             return true;
