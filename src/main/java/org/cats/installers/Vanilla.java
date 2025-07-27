@@ -71,7 +71,7 @@ public class Vanilla {
         if (serverJarURL != null) {
             logger.info("{}Ссылка получена!{}", GREEN, RESET);
             logger.info("{}Начало скачивания server.jar...{}", GREEN, RESET);
-            downloadWithProgress(serverJarURL, "server.jar"); //"server-" + selectedVersion + ".jar"
+            downloadWithProgress(serverJarURL, "server-" + selectedVersion + ".jar");
         } else {
             logger.error("{}Ошибка при получении ссылки.{}", RED, RESET);
         }
@@ -164,20 +164,21 @@ public class Vanilla {
             outputStream.close();
             logger.info("\n{}Скачивание завершено!{}", GREEN, RESET);
 
+
+            File downloadedFile = new File(saveFile);
             File serverJar = new File("server.jar");
 
-            if (serverJar.exists()) {
-                serverJar.delete();
+            if (downloadedFile.renameTo(serverJar)) {
+                logger.info("{}Файл успешно переименован в server.jar!{}", GREEN, RESET);
+                System.out.println(GREEN + "Команду запуска менять не нужно. Оставьте команду запуска для Java Edition" + RESET);
+            } else {
+                logger.warn("{}Ошибка при переименовании файла!{}", RED, RESET);
             }
 
-            if (serverJar.exists()) {
-                if (!serverJar.delete()) {
-                    logger.error("{}Не удалось удалить старый server.jar!{}", RED, RESET);
-                    return;
-                }
-            }
 
             logger.info("{}Файл успешно сохранён как server.jar!{}", GREEN, RESET);
+
+
 
         } catch (Exception e) {
             logger.error("{}Ошибка загрузки: {}{}", RED, e.getMessage(), RESET);

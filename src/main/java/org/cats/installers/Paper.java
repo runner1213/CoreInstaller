@@ -60,7 +60,7 @@ public class Paper {
             }
 
             if (downloadedFile.renameTo(serverJar)) {
-                logger.info(GREEN + "Файл успешно переименован в server.jar!" + RESET);
+                logger.info("{}Файл успешно переименован в server.jar!{}", GREEN, RESET);
                 System.out.println(GREEN + "Команду запуска менять не нужно. Оставьте команду запуска для Java Edition" + RESET);
             } else {
                 logger.warn("{}Ошибка при переименовании файла!{}", RED, RESET);
