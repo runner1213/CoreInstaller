@@ -25,9 +25,11 @@ public class Main {
         logger.info("{}Успешная инициализация{}", GREEN, RESET);
 
         // Проверка зрения
+        /*
         logger.info("{}Текст для проверки не имеющий смысла{}", CYAN, RESET);
         logger.info("-------------------------");
         logger.info("'1' - Не вижу текст\n* (любой символ в поле ввода) - вижу текст");
+
 
         System.out.print(">> ");
 
@@ -39,6 +41,8 @@ public class Main {
             }
             else if (colors.isEmpty()) { throw new InputMismatchException(); }
         } catch (InputMismatchException ignored) {}
+
+         */
 
         // Выбор ядра и всё такое
         System.out.println("Выберите ядро для установки:");
