@@ -34,7 +34,7 @@ public class Paper {
     public static void downloadWithProgress(String fileURL, String saveFile) {
         try {
             HttpURLConnection connection = (HttpURLConnection) new URL(fileURL).openConnection();
-            int fileSize = connection.getContentLength();
+            long fileSize = connection.getContentLengthLong();
             InputStream inputStream = connection.getInputStream();
             FileOutputStream outputStream = new FileOutputStream(saveFile);
 
@@ -42,10 +42,16 @@ public class Paper {
             int bytesRead, downloaded = 0;
 
             logger.info("Скачивание {}", saveFile);
+
             while ((bytesRead = inputStream.read(buffer)) != -1) {
                 outputStream.write(buffer, 0, bytesRead);
                 downloaded += bytesRead;
-                printProgress(downloaded, fileSize);
+
+                if (fileSize > 0) {
+                    printProgress(downloaded, fileSize);
+                } else {
+                    printUnknownSizeProgress(downloaded);
+                }
             }
 
             inputStream.close();
@@ -73,7 +79,7 @@ public class Paper {
     }
 
 
-    public static void printProgress(int downloaded, int totalSize) {
+    public static void printProgress(long downloaded, long totalSize) {
         int percent = (int) ((double) downloaded / totalSize * 100);
         int progressBars = percent / 2;
 
@@ -83,6 +89,10 @@ public class Paper {
             else bar.append("-");
         }
         System.out.print(bar);
+    }
+
+    public static void printUnknownSizeProgress(long downloaded) {
+        System.out.print((downloaded / 1024 / 1024) + " MB");
     }
 
     public static int getLatestBuild(String version) {
