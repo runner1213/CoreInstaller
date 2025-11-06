@@ -92,7 +92,7 @@ public class Paper {
     }
 
     public static void printUnknownSizeProgress(long downloaded) {
-        System.out.print((downloaded / 1024 / 1024) + " MB");
+        logger.info("\r\n{} MB", downloaded / 1024 / 1024);
     }
 
     public static int getLatestBuild(String version) {

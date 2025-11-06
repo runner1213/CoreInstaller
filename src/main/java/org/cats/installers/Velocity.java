@@ -9,6 +9,7 @@ import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import static org.cats.installers.Vanilla.getJSON;
 import static org.cats.installers.Vanilla.downloadWithProgress;
 import static org.cats.util.Colors.*;
 import static org.cats.util.Eula.*;
@@ -25,7 +26,7 @@ public class Velocity {
             logger.info("{}Получение информации о версиях...{}", CYAN, RESET);
             JSONObject projectData = getJSON(RELEASES_URL);
             if (projectData == null) {
-                System.out.println(RED + "Ошибка при получении данных о версиях." + RESET);
+                logger.error("{}Ошибка при получении данных о версиях.{}", RED, RESET);
                 return;
             }
 
@@ -54,7 +55,7 @@ public class Velocity {
 
             createEulaFile();
 
-            logger.info("{}\nVelocity успешно установлен!{}", GREEN, RESET);
+            logger.info("{}Velocity успешно установлен!{}", GREEN, RESET);
 
         } catch (Exception e) {
             logger.error("{}Ошибка: {}{}", RED, e.getMessage(), RESET);
@@ -74,12 +75,12 @@ public class Velocity {
         List<String> lastTen = versionList.subList(0, limit);
 
         Scanner scanner = new Scanner(System.in);
-        System.out.println("\n" + YELLOW + "Доступные версии Velocity:" + RESET);
+        logger.info("\n{}Доступные версии Velocity:{}", YELLOW, RESET);
         for (int i = 0; i < lastTen.size(); i++) {
-            System.out.println((i + 1) + ". " + lastTen.get(i));
+            logger.info("{}{}. {}{}", CYAN, i + 1, lastTen.get(i), RESET);
         }
 
-        System.out.println("\nВыберите версию Velocity (1-" + lastTen.size() + "): ");
+        logger.info("\nВыберите версию Velocity (1-{}):", lastTen.size());
         System.out.print(">> ");
         int choice = scanner.nextInt();
 
@@ -102,7 +103,6 @@ public class Velocity {
         return latest;
     }
 
-
     private static String getFileName(String version, int buildNumber) {
         String url = "https://api.papermc.io/v2/projects/velocity/versions/" + version + "/builds/" + buildNumber;
         JSONObject buildData = getJSON(url);
@@ -115,33 +115,5 @@ public class Velocity {
         }
 
         return null;
-    }
-
-
-    private static JSONObject getJSON(String url) {
-        try {
-            HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
-            connection.setRequestMethod("GET");
-            connection.setConnectTimeout(10000);
-            connection.setReadTimeout(10000);
-            connection.setRequestProperty("User-Agent", "Mozilla/5.0");
-
-            if (connection.getResponseCode() != 200) {
-                System.err.println("HTTP ошибка: " + connection.getResponseCode());
-                return null;
-            }
-
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
-                StringBuilder response = new StringBuilder();
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    response.append(line);
-                }
-                return new JSONObject(response.toString());
-            }
-        } catch (Exception e) {
-            System.err.println("Ошибка JSON запроса: " + e.getMessage());
-            return null;
-        }
     }
 }

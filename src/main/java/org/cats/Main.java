@@ -45,9 +45,9 @@ public class Main {
          */
 
         // Выбор ядра и всё такое
-        System.out.println("Выберите ядро для установки:");
-        System.out.println("1. Vanilla 2. Paper 3. Velocity 4. Forge 5. Fabric 6. NeoForge");
-        System.out.print(">> ");
+        logger.info("Выберите ядро для установки:");
+        logger.info("1. Vanilla\n 2. Paper\n 3. Velocity\n 4. Forge\n 5. Fabric\n 6. NeoForge");
+        logger.info(">> ");
         try {
             switch (scanner.nextInt()) {
                 case 1 -> VanillaInstaller();
@@ -57,14 +57,14 @@ public class Main {
                 case 5 -> installFabric();
                 case 6 -> installNeoForge();
                 default -> {
-                    System.out.println(RED + "Упс.. Ты ввёл что-то не то" + RESET);
-                    System.out.println(YELLOW + "Попробуй снова :3" + RESET);
+                    logger.warn("{}Некорректный выбор{}", RED, RESET);
+                    logger.warn("{}Попробуйте снова{}", YELLOW, RESET);
                     application();
                 }
             }
         } catch (InputMismatchException e) {
             logger.warn("Введено нецелое число: {}", e.getMessage());
-            System.out.println(RED + "Нужно ввести число от 1 до 6!" + RESET);
+            logger.error("{}Нужно ввести число от 1 до 6!{}", RED, RESET);
             scanner.nextLine();
             application();
         }

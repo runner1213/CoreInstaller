@@ -29,13 +29,13 @@ public class Vanilla {
         JSONArray versions = manifest.getJSONArray("versions");
 
         Scanner scanner = new Scanner(System.in);
-        System.out.println("\nВыберите тип ядра:");
-        System.out.println("1. "+ GREEN + "Release" + RESET);
-        System.out.println("2. "+ CYAN + "Snapshot" + RESET);
-        System.out.println("3. "+  YELLOW + "Beta" + RESET);
-        System.out.println("4. " + RED + "Alpha" + RESET);
-        System.out.print("Введите номер: ");
-        System.out.print(">> ");
+        logger.info("\nВыберите тип ядра:");
+        logger.info("1. {}Release{}", GREEN, RESET);
+        logger.info("2. {}Snapshot{}", CYAN, RESET);
+        logger.info("3. {}Beta{}", YELLOW, RESET);
+        logger.info("4. {}Alpha{}", RED, RESET);
+        logger.info("Введите номер: ");
+        logger.info(">> ");
         int typeChoice = scanner.nextInt();
         String type = getTypeFromChoice(typeChoice);
 
@@ -214,7 +214,7 @@ public class Vanilla {
     public static void animateLoading(int steps) {
         String[] frames = {"⠁", "⠂", "⠄", "⡀", "⢀", "⠠", "⠐", "⠈"};
         for (int i = 0; i < steps; i++) {
-            System.out.print("\r⏳ Загрузка " + frames[i % frames.length]);
+            System.out.print("\rЗагрузка " + frames[i % frames.length]);
             try {
                 Thread.sleep(100);
             } catch (InterruptedException ignored) {}

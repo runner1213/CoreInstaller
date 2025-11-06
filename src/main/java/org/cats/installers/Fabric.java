@@ -21,7 +21,7 @@ public class Fabric {
 
     public static void installFabric() {
         try {
-            logger.info(CYAN + "Получение списка версий Minecraft..." + RESET);
+            logger.info("{}Получение списка версий Minecraft...{}", CYAN, RESET);
             JSONArray gameVersions = getJSONArray(GAME_VERSIONS_URL);
             if (gameVersions == null) {
                 System.out.println(RED + "Ошибка при получении списка версий Minecraft." + RESET);
@@ -33,7 +33,7 @@ public class Fabric {
                 return;
             }
 
-            logger.info(CYAN + "\nПолучение версий загрузчика Fabric..." + RESET);
+            logger.info("{}\nПолучение версий загрузчика Fabric...{}", CYAN, RESET);
             JSONArray loaderVersions = getJSONArray(LOADER_VERSIONS_URL);
             if (loaderVersions == null) {
                 logger.error(RED + "Ошибка при получении версий загрузчика." + RESET);
@@ -45,7 +45,7 @@ public class Fabric {
                 return;
             }
 
-            logger.info(CYAN + "\nПолучение версии установщика..." + RESET);
+            logger.info("{}\nПолучение версии установщика...{}", CYAN, RESET);
             JSONArray installerVersions = getJSONArray(INSTALLER_URL);
             if (installerVersions == null) {
                 logger.info(RED + "Ошибка при получении версии установщика." + RESET);
@@ -63,15 +63,15 @@ public class Fabric {
                     installerVersion, installerVersion
             );
 
-            logger.info(CYAN + "\nСкачивание установщика Fabric..." + RESET);
+            logger.info("{}\nСкачивание установщика Fabric...{}", CYAN, RESET);
             downloadWithProgress(installerUrl);
 
-            logger.info(YELLOW + "\nЗапуск установщика Fabric..." + RESET);
+            logger.info("{}\nЗапуск установщика Fabric...{}", YELLOW, RESET);
             runInstaller(minecraftVersion, loaderVersion);
 
             createEulaFile();
 
-            logger.info(GREEN + "\nFabric успешно установлен для Minecraft " + minecraftVersion + RESET);
+            logger.info("{}\nFabric успешно установлен для Minecraft {}{}", GREEN, minecraftVersion, RESET);
 
         } catch (Exception e) {
             logger.error("Ошибка: {}", e.getMessage());
@@ -216,7 +216,7 @@ public class Fabric {
                     downloaded += bytesRead;
                     printProgress(downloaded, fileSize);
                 }
-                logger.info("\n" + GREEN + "Скачивание завершено!" + RESET);
+                logger.info("\n{}Скачивание завершено!{}", GREEN, RESET);
             }
         } catch (Exception e) {
             throw new RuntimeException("Ошибка загрузки: " + e.getMessage());
@@ -255,7 +255,7 @@ public class Fabric {
             writer.write("eula=true\n");
             System.out.println(YELLOW + "Файл eula.txt создан" + RESET);
         } catch (IOException e) {
-            logger.warn(RED + "Ошибка создания EULA: {}", e.getMessage() + RESET);
+            logger.warn("{}Ошибка создания EULA: {}", RED, e.getMessage() + RESET);
         }
     }
 
