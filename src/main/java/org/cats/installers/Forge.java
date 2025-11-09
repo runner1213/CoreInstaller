@@ -2,6 +2,7 @@ package org.cats.installers;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cats.Installer;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -12,27 +13,28 @@ import java.nio.file.StandardCopyOption;
 import static org.cats.util.Colors.*;
 import static org.cats.util.Eula.createEulaFile;
 
-public class Forge {
+public class Forge implements Installer {
     private static final Logger logger = LogManager.getLogger(Forge.class);
 
     private static final String FILE_URL = "https://www.curseforge.com/api/v1/mods/525582/files/5253323/download";
     private static final String FILE_NAME = "installer.jar";
 
-    public static void installForge() {
-        logger.info(CYAN + "Downloading " + FILE_NAME + "..." + RESET);
+    @Override
+    public void init() {
+        logger.info("{}Скачивание " + FILE_NAME + "...{}", CYAN, RESET);
 
         if (downloadFile(FILE_URL, FILE_NAME)) {
-            logger.info(GREEN + "File downloaded successfully!" + RESET);
+            logger.info("{}Файл скачан успешно!{}", GREEN, RESET);
 
             if (runInstaller(FILE_NAME)) {
-                logger.info(GREEN + "Installation completed successfully!" + RESET);
+                logger.info("{}Установка завершена успешно!{}", GREEN, RESET);
                 createEulaFile();
             } else {
                 System.out.println(YELLOW + "Keeping installer for manual inspection" + RESET);
             }
             deleteFile(FILE_NAME);
         } else {
-            logger.warn(RED + "Download failed." + RESET);
+            logger.warn("{}Не получилось установить{}", RED, RESET);
         }
     }
 
@@ -49,13 +51,13 @@ public class Forge {
             }
             return true;
         } catch (IOException e) {
-            logger.error("Download error: {}", e.getMessage());
+            logger.error("Ошибка скачивания: {}", e.getMessage());
             return false;
         }
     }
 
     public static boolean runInstaller(String fileName) {
-        System.out.println(YELLOW + "Launching " + fileName + "..." + RESET);
+        System.out.println(YELLOW + "Запуск " + fileName + "..." + RESET);
 
         try {
             Process process = new ProcessBuilder("java", "-Xms128M", "-Xmx1G", "-jar", fileName)
@@ -64,28 +66,17 @@ public class Forge {
 
             int exitCode = process.waitFor();
             if (exitCode != 0) {
-                logger.warn("{}Installer failed with exit code: {}{}", RED, exitCode, RESET);
+                logger.warn("{}IУстановщик закрыт с кодом выхода: {}{}", RED, exitCode, RESET);
                 return false;
             }
             return true;
         } catch (IOException e) {
-            logger.error(RED + "Execution error: {}" + RESET, e.getMessage());
+            logger.error("{}Ошибка выполнения: {}{}", RED, e.getMessage(), RESET);
             return false;
         } catch (InterruptedException e) {
-            logger.error(RED + "Installation interrupted" + RESET);
+            logger.error("{}Установка прервана{}", RED, RESET);
             Thread.currentThread().interrupt();
             return false;
-        }
-    }
-
-    public static void deleteFile(String fileName) {
-        File file = new File(fileName);
-        if (file.exists()) {
-            if (file.delete()) {
-                logger.info(RED + "File {} deleted." + RESET, fileName);
-            } else {
-                logger.error(RED + "Failed to delete file: {}" + RESET, fileName);
-            }
         }
     }
 }

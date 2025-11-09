@@ -6,22 +6,22 @@ import java.util.*;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cats.Installer;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import static org.cats.installers.Vanilla.getJSON;
-import static org.cats.installers.Vanilla.downloadWithProgress;
 import static org.cats.util.Colors.*;
 import static org.cats.util.Eula.*;
 
-public class Velocity {
+public class Velocity implements Installer {
     private static final Logger logger = LogManager.getLogger(Velocity.class);
 
     private static final String RELEASES_URL = "https://api.papermc.io/v2/projects/velocity";
     private static final String DOWNLOAD_URL_TEMPLATE = "https://api.papermc.io/v2/projects/velocity/versions/%s/builds/%s/downloads/%s";
     private static final String JAR_FILE = "server.jar";
 
-    public static void installVelocity() {
+    @Override
+    public void init() {
         try {
             logger.info("{}Получение информации о версиях...{}", CYAN, RESET);
             JSONObject projectData = getJSON(RELEASES_URL);
@@ -63,7 +63,7 @@ public class Velocity {
         }
     }
 
-    private static String selectVersion(JSONObject projectData) {
+    private String selectVersion(JSONObject projectData) {
         JSONArray versions = projectData.getJSONArray("versions");
         List<String> versionList = new ArrayList<>();
 
@@ -92,7 +92,7 @@ public class Velocity {
         return lastTen.get(choice - 1);
     }
 
-    private static int getLatestBuild(JSONObject buildsData) {
+    private int getLatestBuild(JSONObject buildsData) {
         JSONArray builds = buildsData.getJSONArray("builds");
         int latest = 0;
         for (int i = 0; i < builds.length(); i++) {
@@ -103,7 +103,7 @@ public class Velocity {
         return latest;
     }
 
-    private static String getFileName(String version, int buildNumber) {
+    private String getFileName(String version, int buildNumber) {
         String url = "https://api.papermc.io/v2/projects/velocity/versions/" + version + "/builds/" + buildNumber;
         JSONObject buildData = getJSON(url);
         if (buildData == null) return null;

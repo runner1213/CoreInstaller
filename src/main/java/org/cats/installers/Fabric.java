@@ -6,12 +6,14 @@ import java.util.*;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cats.Installer;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import static org.cats.util.Colors.*;
+import static org.cats.util.Eula.createEulaFile;
 
-public class Fabric {
+public class Fabric implements Installer {
     private static final Logger logger = LogManager.getLogger(Fabric.class);
 
     private static final String GAME_VERSIONS_URL = "https://meta.fabricmc.net/v2/versions/game";
@@ -19,7 +21,8 @@ public class Fabric {
     private static final String INSTALLER_URL = "https://meta.fabricmc.net/v2/versions/installer";
     private static final String INSTALLER_FILE = "fabric-installer.jar";
 
-    public static void installFabric() {
+    @Override
+    public void init() {
         try {
             logger.info("{}Получение списка версий Minecraft...{}", CYAN, RESET);
             JSONArray gameVersions = getJSONArray(GAME_VERSIONS_URL);
@@ -36,7 +39,7 @@ public class Fabric {
             logger.info("{}\nПолучение версий загрузчика Fabric...{}", CYAN, RESET);
             JSONArray loaderVersions = getJSONArray(LOADER_VERSIONS_URL);
             if (loaderVersions == null) {
-                logger.error(RED + "Ошибка при получении версий загрузчика." + RESET);
+                logger.error("{}Ошибка при получении версий загрузчика.{}", RED, RESET);
                 return;
             }
 
@@ -48,13 +51,13 @@ public class Fabric {
             logger.info("{}\nПолучение версии установщика...{}", CYAN, RESET);
             JSONArray installerVersions = getJSONArray(INSTALLER_URL);
             if (installerVersions == null) {
-                logger.info(RED + "Ошибка при получении версии установщика." + RESET);
+                logger.info("{}Ошибка при получении версии установщика.{}", RED, RESET);
                 return;
             }
 
             String installerVersion = getLatestInstallerVersion(installerVersions);
             if (installerVersion == null) {
-                logger.error(RED + "Не удалось найти версию установщика." + RESET);
+                logger.error("{}Не удалось найти версию установщика.{}", RED, RESET);
                 return;
             }
 
@@ -64,7 +67,7 @@ public class Fabric {
             );
 
             logger.info("{}\nСкачивание установщика Fabric...{}", CYAN, RESET);
-            downloadWithProgress(installerUrl);
+            downloadWithProgress(installerUrl, "server.jar");
 
             logger.info("{}\nЗапуск установщика Fabric...{}", YELLOW, RESET);
             runInstaller(minecraftVersion, loaderVersion);
@@ -76,11 +79,11 @@ public class Fabric {
         } catch (Exception e) {
             logger.error("Ошибка: {}", e.getMessage());
         } finally {
-            deleteFile();
+            deleteFile(INSTALLER_FILE);
         }
     }
 
-    private static String selectMinecraftVersion(JSONArray gameVersions) {
+    private String selectMinecraftVersion(JSONArray gameVersions) {
         List<String> versions = new ArrayList<>();
 
         for (int i = 0; i < gameVersions.length(); i++) {
@@ -107,7 +110,7 @@ public class Fabric {
         return scanner.nextLine();
     }
 
-    private static String selectLoaderVersion(JSONArray loaderVersions) {
+    private String selectLoaderVersion(JSONArray loaderVersions) {
         List<String> versions = new ArrayList<>();
 
         for (int i = 0; i < loaderVersions.length(); i++) {
@@ -138,7 +141,7 @@ public class Fabric {
         return lastFive.get(choice - 1);
     }
 
-    private static String getLatestInstallerVersion(JSONArray installerVersions) {
+    private String getLatestInstallerVersion(JSONArray installerVersions) {
         for (int i = 0; i < installerVersions.length(); i++) {
             JSONObject installer = installerVersions.getJSONObject(i);
             if (installer.getBoolean("stable")) {
@@ -148,7 +151,7 @@ public class Fabric {
         return null;
     }
 
-    private static JSONArray getJSONArray(String url) {
+    private JSONArray getJSONArray(String url) {
         try {
             HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
             connection.setRequestMethod("GET");
@@ -175,7 +178,7 @@ public class Fabric {
         }
     }
 
-    private static void runInstaller(String mcVersion, String loaderVersion) {
+    private void runInstaller(String mcVersion, String loaderVersion) {
         try {
             Process process = new ProcessBuilder(
                     "java", "-jar", Fabric.INSTALLER_FILE,
@@ -192,81 +195,6 @@ public class Fabric {
         } catch (IOException | InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new RuntimeException("Ошибка запуска установщика: " + e.getMessage());
-        }
-    }
-
-    private static void downloadWithProgress(String fileURL) {
-        try {
-            HttpURLConnection connection = (HttpURLConnection) new URL(fileURL).openConnection();
-            connection.setRequestMethod("GET");
-            connection.setConnectTimeout(15000);
-            connection.setReadTimeout(30000);
-            connection.setRequestProperty("User-Agent", "Mozilla/5.0");
-
-            int fileSize = connection.getContentLength();
-            try (InputStream inputStream = connection.getInputStream();
-                 FileOutputStream outputStream = new FileOutputStream(Fabric.INSTALLER_FILE)) {
-
-                byte[] buffer = new byte[4096];
-                int bytesRead, downloaded = 0;
-
-                System.out.println("📥 Скачивание " + Fabric.INSTALLER_FILE);
-                while ((bytesRead = inputStream.read(buffer)) != -1) {
-                    outputStream.write(buffer, 0, bytesRead);
-                    downloaded += bytesRead;
-                    printProgress(downloaded, fileSize);
-                }
-                logger.info("\n{}Скачивание завершено!{}", GREEN, RESET);
-            }
-        } catch (Exception e) {
-            throw new RuntimeException("Ошибка загрузки: " + e.getMessage());
-        }
-    }
-
-    private static void printProgress(int downloaded, int totalSize) {
-        int percent = totalSize > 0 ? (downloaded * 100) / totalSize : -1;
-        int progressWidth = 30;
-        int filled = progressWidth * percent / 100;
-
-        StringBuilder bar = new StringBuilder("\r[");
-        for (int i = 0; i < progressWidth; i++) {
-            bar.append(i < filled ? "=" : "-");
-        }
-
-        String progressInfo;
-        if (percent >= 0) {
-            progressInfo = percent + "% (" + formatSize(downloaded) + "/" + formatSize(totalSize) + ")";
-        } else {
-            progressInfo = formatSize(downloaded);
-        }
-
-        System.out.print(bar + "] " + progressInfo);
-    }
-
-    private static String formatSize(long bytes) {
-        if (bytes < 1024) return bytes + " B";
-        int exp = (int) (Math.log(bytes) / Math.log(1024));
-        char unit = "KMGTPE".charAt(exp - 1);
-        return String.format("%.1f %sB", bytes / Math.pow(1024, exp), unit);
-    }
-
-    private static void createEulaFile() {
-        try (FileWriter writer = new FileWriter("eula.txt")) {
-            writer.write("eula=true\n");
-            System.out.println(YELLOW + "Файл eula.txt создан" + RESET);
-        } catch (IOException e) {
-            logger.warn("{}Ошибка создания EULA: {}", RED, e.getMessage() + RESET);
-        }
-    }
-
-    private static void deleteFile() {
-        File file = new File(Fabric.INSTALLER_FILE);
-        if (file.exists()) {
-            if (file.delete()) {
-                logger.info(RED + "Временный файл " + Fabric.INSTALLER_FILE + " удалён" + RESET);
-            } else {
-                logger.warn(RED + "Ошибка удаления: " + Fabric.INSTALLER_FILE + RESET);
-            }
         }
     }
 }

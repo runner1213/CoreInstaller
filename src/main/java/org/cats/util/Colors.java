@@ -1,7 +1,5 @@
 package org.cats.util;
 
-import java.util.Arrays;
-
 public class Colors {
     public static String RESET = "\u001B[0m";
     public static String BLACK = "\u001B[30m";
