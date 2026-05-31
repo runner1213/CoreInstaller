@@ -38,7 +38,7 @@ public class Forge implements Installer {
         }
     }
 
-    public static boolean downloadFile(String fileURL, String saveFile) {
+    private static boolean downloadFile(String fileURL, String saveFile) {
         try {
             URL url = new URL(fileURL);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -56,7 +56,7 @@ public class Forge implements Installer {
         }
     }
 
-    public static boolean runInstaller(String fileName) {
+    private static boolean runInstaller(String fileName) {
         System.out.println(YELLOW + "Запуск " + fileName + "..." + RESET);
 
         try {

@@ -1,5 +1,37 @@
-.idea/
-.env
+# Maven
 target/
+dependency-reduced-pom.xml
+
+# Runtime output
 logs/
+*.log
+eula.txt
+server.jar
+server-*.jar
+installer.jar
+fabric-installer.jar
+neoforge-installer.jar
+
+# Local environment
+.env
+.env.*
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Eclipse
+.classpath
+.project
+.settings/
+
+# VS Code
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
 !.gitignore

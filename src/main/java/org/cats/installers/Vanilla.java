@@ -41,7 +41,7 @@ public class Vanilla implements Installer {
 
         List<String> filteredVersions = filterVersionsByType(versions, type);
         if (filteredVersions.isEmpty()) {
-            logger.warn(RED + "Нет доступных версий для выбранного типа." + RESET);
+            logger.warn("{}Нет доступных версий для выбранного типа.{}", RED, RESET);
             return;
         }
 

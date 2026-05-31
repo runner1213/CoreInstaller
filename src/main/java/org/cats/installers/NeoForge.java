@@ -62,10 +62,10 @@ public class NeoForge implements Installer {
             }
 
             String installerUrl = String.format(INSTALLER_URL_TEMPLATE, selectedNeoForgeVersion, selectedNeoForgeVersion);
-            logger.info(CYAN + "\nСкачивание установщика {}..." + RESET, selectedNeoForgeVersion);
+            logger.info("{}\nСкачивание установщика {}...{}", CYAN, selectedNeoForgeVersion, RESET);
             downloadWithProgress(installerUrl, INSTALLER_FILE);
 
-            logger.info(YELLOW + "\nЗапуск установщика..." + RESET);
+            logger.info("{}\nЗапуск установщика...{}", YELLOW, RESET);
             runInstaller(INSTALLER_FILE);
 
             createEulaFile();
@@ -74,8 +74,7 @@ public class NeoForge implements Installer {
             logger.info("{}\nNeoForge успешно установлен для Minecraft {}{}", GREEN, minecraftVersion, RESET);
 
         } catch (Exception e) {
-            logger.error(RED + "Ошибка: {}" + RESET, e.getMessage());
-            e.printStackTrace();
+            logger.error("{}Ошибка при установке NeoForge{}", RED, RESET, e);
         }
     }
 
