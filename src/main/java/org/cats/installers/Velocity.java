@@ -7,19 +7,27 @@ import java.util.*;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cats.Installer;
+import org.cats.InstallerSupport;
+import org.cats.io.UserInput;
+import org.cats.util.Eula;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import static org.cats.util.Colors.*;
-import static org.cats.util.Eula.*;
 
-public class Velocity implements Installer {
+public class Velocity extends InstallerSupport {
     private static final Logger logger = LogManager.getLogger(Velocity.class);
 
     private static final String RELEASES_URL = "https://fill.papermc.io/v3/projects/velocity";
     private static final String USER_AGENT = "CoreInstaller/3.2 (https://github.com/runner1213/CoreInstaller)";
     private static final String JAR_FILE = "server.jar";
+    private final UserInput input;
+    private final Eula eula;
+
+    public Velocity(UserInput input, Eula eula) {
+        this.input = input;
+        this.eula = eula;
+    }
 
     @Override
     public void init() {
@@ -51,7 +59,7 @@ public class Velocity implements Installer {
             logger.info("{}Скачивание Velocity {} (build #{})...{}", CYAN, selectedVersion, latestBuild.number, RESET);
             downloadWithProgress(latestBuild.downloadUrl, JAR_FILE);
 
-            createEulaFile();
+            eula.createEulaFile();
 
             logger.info("{}Velocity успешно установлен!{}", GREEN, RESET);
 
@@ -65,7 +73,6 @@ public class Velocity implements Installer {
         int limit = Math.min(10, versionList.size());
         List<String> lastTen = versionList.subList(0, limit);
 
-        Scanner scanner = new Scanner(System.in);
         logger.info("\n{}Доступные версии Velocity:{}", YELLOW, RESET);
         for (int i = 0; i < lastTen.size(); i++) {
             logger.info("{}{}. {}{}", CYAN, i + 1, lastTen.get(i), RESET);
@@ -73,7 +80,7 @@ public class Velocity implements Installer {
 
         logger.info("\nВыберите версию Velocity (1-{}):", lastTen.size());
         System.out.print(">> ");
-        int choice = scanner.nextInt();
+        int choice = input.readInt();
 
         if (choice < 1 || choice > lastTen.size()) {
             logger.warn("{}Некорректный выбор.{}", RED, RESET);

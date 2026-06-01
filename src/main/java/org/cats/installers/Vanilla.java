@@ -5,14 +5,23 @@ import java.util.*;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cats.Installer;
+import org.cats.InstallerSupport;
+import org.cats.io.UserInput;
+import org.cats.util.Eula;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import static org.cats.util.Colors.*;
 
-public class Vanilla implements Installer {
+public class Vanilla extends InstallerSupport {
     private static final Logger logger = LogManager.getLogger(Vanilla.class);
+    private final UserInput input;
+    private final Eula eula;
+
+    public Vanilla(UserInput input, Eula eula) {
+        this.input = input;
+        this.eula = eula;
+    }
 
     @Override
     public void init() {
@@ -28,7 +37,6 @@ public class Vanilla implements Installer {
         Map<String, String> latestVersions = getLatestVersions(manifest);
         JSONArray versions = manifest.getJSONArray("versions");
 
-        Scanner scanner = new Scanner(System.in);
         logger.info("\nВыберите тип ядра:");
         logger.info("1. {}Release{}", GREEN, RESET);
         logger.info("2. {}Snapshot{}", CYAN, RESET);
@@ -36,7 +44,7 @@ public class Vanilla implements Installer {
         logger.info("4. {}Alpha{}", RED, RESET);
         logger.info("Введите номер: ");
         logger.info(">> ");
-        int typeChoice = scanner.nextInt();
+        int typeChoice = input.readInt();
         String type = getTypeFromChoice(typeChoice);
 
         List<String> filteredVersions = filterVersionsByType(versions, type);
@@ -51,11 +59,9 @@ public class Vanilla implements Installer {
         for (int i = 0; i < limit; i++) {
             System.out.println((i + 1) + ". " + filteredVersions.get(i));
         }
-        scanner.nextLine();
-
         System.out.println(GREEN + "Введите полную версию (1.21.5, 1.17, 1.12.2)" + RESET);
         System.out.print(">> ");
-        String selectedVersion = scanner.nextLine().trim();
+        String selectedVersion = input.readLine().trim();
 
         logger.info("{}Получение ссылки для версии {}...{}", CYAN, selectedVersion, RESET);
         animateLoading(3);
@@ -65,6 +71,7 @@ public class Vanilla implements Installer {
             logger.info("{}Ссылка получена!{}", GREEN, RESET);
             logger.info("{}Начало скачивания server.jar...{}", GREEN, RESET);
             downloadWithProgress(serverJarURL, "server-" + selectedVersion + ".jar");
+            eula.createEulaFile();
         } else {
             logger.error("{}Ошибка при получении ссылки.{}", RED, RESET);
         }

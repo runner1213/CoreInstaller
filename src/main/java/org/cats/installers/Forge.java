@@ -2,7 +2,8 @@ package org.cats.installers;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cats.Installer;
+import org.cats.InstallerSupport;
+import org.cats.util.Eula;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -11,13 +12,17 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import static org.cats.util.Colors.*;
-import static org.cats.util.Eula.createEulaFile;
 
-public class Forge implements Installer {
+public class Forge extends InstallerSupport {
     private static final Logger logger = LogManager.getLogger(Forge.class);
 
     private static final String FILE_URL = "https://www.curseforge.com/api/v1/mods/525582/files/5253323/download";
     private static final String FILE_NAME = "installer.jar";
+    private final Eula eula;
+
+    public Forge(Eula eula) {
+        this.eula = eula;
+    }
 
     @Override
     public void init() {
@@ -28,7 +33,7 @@ public class Forge implements Installer {
 
             if (runInstaller(FILE_NAME)) {
                 logger.info("{}Установка завершена успешно!{}", GREEN, RESET);
-                createEulaFile();
+                eula.createEulaFile();
             } else {
                 System.out.println(YELLOW + "Keeping installer for manual inspection" + RESET);
             }

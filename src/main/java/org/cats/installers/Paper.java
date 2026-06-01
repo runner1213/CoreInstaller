@@ -8,19 +8,27 @@ import java.util.*;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cats.Installer;
+import org.cats.InstallerSupport;
+import org.cats.io.UserInput;
+import org.cats.util.Eula;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import static org.cats.util.Colors.*;
-import static org.cats.util.Eula.createEulaFile;
 
-public class Paper implements Installer {
+public class Paper extends InstallerSupport {
     private static final Logger logger = LogManager.getLogger(Paper.class);
 
     private static final String PROJECT_URL = "https://fill.papermc.io/v3/projects/paper";
     private static final String USER_AGENT = "CoreInstaller/3.2 (https://github.com/runner1213/CoreInstaller)";
     private static final String JAR_FILE = "server.jar";
+    private final UserInput input;
+    private final Eula eula;
+
+    public Paper(UserInput input, Eula eula) {
+        this.input = input;
+        this.eula = eula;
+    }
 
     @Override
     public void init() {
@@ -32,10 +40,9 @@ public class Paper implements Installer {
                 return;
             }
 
-            Scanner scanner = new Scanner(System.in);
             logger.info("Введите версию Paper или ветку Minecraft (1.21, 1.21.11, 1.16.5):");
             logger.info(">> ");
-            String requestedVersion = scanner.next().trim();
+            String requestedVersion = input.readLine().trim();
 
             String minecraftVersion = resolveMinecraftVersion(projectData, requestedVersion);
             if (minecraftVersion == null) {
@@ -63,7 +70,7 @@ public class Paper implements Installer {
             logger.info("{}Скачивание Paper {} (build #{})...{}", CYAN, minecraftVersion, latestBuild.number, RESET);
             downloadWithProgress(latestBuild.downloadUrl, JAR_FILE);
 
-            createEulaFile();
+            eula.createEulaFile();
 
             logger.info("{}Paper успешно установлен для Minecraft {}{}", GREEN, minecraftVersion, RESET);
         } catch (Exception e) {

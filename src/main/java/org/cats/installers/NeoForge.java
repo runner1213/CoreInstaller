@@ -7,22 +7,30 @@ import javax.xml.parsers.*;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cats.Installer;
+import org.cats.InstallerSupport;
+import org.cats.io.UserInput;
+import org.cats.util.Eula;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.w3c.dom.*;
 import org.xml.sax.InputSource;
 
-import static org.cats.util.Eula.createEulaFile;
 import static org.cats.util.Colors.*;
 
-public class NeoForge implements Installer {
+public class NeoForge extends InstallerSupport {
     private static final Logger logger = LogManager.getLogger(NeoForge.class);
 
     private static final String MAVEN_METADATA_URL = "https://maven.neoforged.net/releases/net/neoforged/neoforge/maven-metadata.xml";
     private static final String MINECRAFT_MANIFEST_URL = "https://launchermeta.mojang.com/mc/game/version_manifest_v2.json";
     private static final String INSTALLER_URL_TEMPLATE = "https://maven.neoforged.net/releases/net/neoforged/neoforge/%s/neoforge-%s-installer.jar";
     private static final String INSTALLER_FILE = "neoforge-installer.jar";
+    private final UserInput input;
+    private final Eula eula;
+
+    public NeoForge(UserInput input, Eula eula) {
+        this.input = input;
+        this.eula = eula;
+    }
 
     @Override
     public void init() {
@@ -68,7 +76,7 @@ public class NeoForge implements Installer {
             logger.info("{}\nЗапуск установщика...{}", YELLOW, RESET);
             runInstaller(INSTALLER_FILE);
 
-            createEulaFile();
+            eula.createEulaFile();
             deleteFile(INSTALLER_FILE);
 
             logger.info("{}\nNeoForge успешно установлен для Minecraft {}{}", GREEN, minecraftVersion, RESET);
@@ -114,7 +122,6 @@ public class NeoForge implements Installer {
         int limit = Math.min(10, releaseVersions.size());
         List<String> lastTen = new ArrayList<>(releaseVersions.subList(0, limit));
 
-        Scanner scanner = new Scanner(System.in);
         System.out.println("\n" + YELLOW + "Доступные версии Minecraft:" + RESET);
         for (int i = 0; i < lastTen.size(); i++) {
             System.out.println((i + 1) + ". " + lastTen.get(i));
@@ -122,7 +129,7 @@ public class NeoForge implements Installer {
 
         System.out.println("\nВыберите версию Minecraft (1-" + lastTen.size() + "): ");
         System.out.print(">> ");
-        int choice = scanner.nextInt();
+        int choice = input.readInt();
 
         if (choice < 1 || choice > lastTen.size()) {
             System.out.println(RED + "Некорректный выбор." + RESET);
@@ -149,7 +156,6 @@ public class NeoForge implements Installer {
             return null;
         }
 
-        Scanner scanner = new Scanner(System.in);
         System.out.println("\n" + YELLOW + "Доступные версии NeoForge:" + RESET);
         for (int i = 0; i < versions.size(); i++) {
             System.out.println((i + 1) + ". " + versions.get(i));
@@ -157,7 +163,7 @@ public class NeoForge implements Installer {
 
         System.out.println("\nВыберите версию NeoForge (1-" + versions.size() + "): ");
         System.out.print(">> ");
-        int choice = scanner.nextInt();
+        int choice = input.readInt();
 
         if (choice < 1 || choice > versions.size()) {
             System.out.println(RED + "Некорректный выбор." + RESET);

@@ -6,20 +6,28 @@ import java.util.*;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cats.Installer;
+import org.cats.InstallerSupport;
+import org.cats.io.UserInput;
+import org.cats.util.Eula;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import static org.cats.util.Colors.*;
-import static org.cats.util.Eula.createEulaFile;
 
-public class Fabric implements Installer {
+public class Fabric extends InstallerSupport {
     private static final Logger logger = LogManager.getLogger(Fabric.class);
 
     private static final String GAME_VERSIONS_URL = "https://meta.fabricmc.net/v2/versions/game";
     private static final String LOADER_VERSIONS_URL = "https://meta.fabricmc.net/v2/versions/loader";
     private static final String INSTALLER_URL = "https://meta.fabricmc.net/v2/versions/installer";
     private static final String INSTALLER_FILE = "fabric-installer.jar";
+    private final UserInput input;
+    private final Eula eula;
+
+    public Fabric(UserInput input, Eula eula) {
+        this.input = input;
+        this.eula = eula;
+    }
 
     @Override
     public void init() {
@@ -72,7 +80,7 @@ public class Fabric implements Installer {
             logger.info("{}\nЗапуск установщика Fabric...{}", YELLOW, RESET);
             runInstaller(minecraftVersion, loaderVersion);
 
-            createEulaFile();
+            eula.createEulaFile();
 
             logger.info("{}\nFabric успешно установлен для Minecraft {}{}", GREEN, minecraftVersion, RESET);
 
@@ -96,7 +104,6 @@ public class Fabric implements Installer {
         //int limit = Math.min(10, versions.size());
         //List<String> lastTen = versions.subList(0, limit);
 
-        Scanner scanner = new Scanner(System.in);
         /*
         System.out.println("\n" + YELLOW + "Доступные версии Minecraft: " + RESET);
         for (int i = 0; i < lastTen.size(); i++) {
@@ -107,7 +114,7 @@ public class Fabric implements Installer {
         System.out.println("\nВыберите версию Minecraft (1.21.5 т.д.) ");
         System.out.print(">> ");
 
-        return scanner.nextLine();
+        return input.readLine();
     }
 
     private String selectLoaderVersion(JSONArray loaderVersions) {
@@ -123,7 +130,6 @@ public class Fabric implements Installer {
         int limit = Math.min(5, versions.size());
         List<String> lastFive = versions.subList(0, limit);
 
-        Scanner scanner = new Scanner(System.in);
         System.out.println("\n" + YELLOW + "Доступные версии загрузчика Fabric:" + RESET);
         for (int i = 0; i < lastFive.size(); i++) {
             System.out.println((i + 1) + ". " + lastFive.get(i));
@@ -131,7 +137,7 @@ public class Fabric implements Installer {
 
         System.out.println("\nВыберите версию загрузчика (1-" + lastFive.size() + "): ");
         System.out.print(">> ");
-        int choice = scanner.nextInt();
+        int choice = input.readInt();
 
         if (choice < 1 || choice > lastFive.size()) {
             logger.warn(RED + "Некорректный выбор." + RESET);
